@@ -1,35 +1,24 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
 import Login from "./login/Login";
-import {
-  useFonts,
-  Montserrat_400Regular,
-  Montserrat_300Light,
-} from "@expo-google-fonts/montserrat";
+import { createStackNavigator } from "@react-navigation/stack";
+import { LoadAssets } from "./components";
+
+const AuthenticationStack = createStackNavigator();
+const AuthenticationNavigator = () => {
+  return (
+    <AuthenticationStack.Navigator>
+      <AuthenticationStack.Screen
+        name="Login"
+        component={Login}
+      ></AuthenticationStack.Screen>
+    </AuthenticationStack.Navigator>
+  );
+};
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
-    Montserrat_400Regular,
-    Montserrat_300Light,
-  });
-
-  if (!fontsLoaded) {
-  }
-
   return (
-    <View style={styles.container}>
-      <Login></Login>
-      <StatusBar style="auto" />
-    </View>
+    <LoadAssets>
+      <AuthenticationNavigator />
+    </LoadAssets>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1B1B1B",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

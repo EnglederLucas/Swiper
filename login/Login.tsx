@@ -1,47 +1,77 @@
 import React, { useState } from "react";
-import { View, TextInput, Text, StyleSheet, ColorPropType } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
+import SimpleTextInput from "../components/SimpleTextInput";
+import SwiperButton from "../components/SwiperButton";
 import SwiperTextInput from "../components/SwiperTextInput";
+import { globalVariables } from "../GlobalStyles";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const elementWidth = 260;
+  const elementHeight = 45;
+
   return (
-    <>
-      <View style={styles.container}>
-        <SwiperTextInput
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text>Login</Text>
+      </View>
+      <View style={styles.form}>
+        <SimpleTextInput
+          width={elementWidth}
+          height={elementHeight}
           value={email}
           placeholder="Email"
-          //   selectionColor="#00ffff"
-          //   underlineColorAndroid="#00ffff"
           onChangeText={(text) => setEmail(text)}
           autoCompleteType="email"
           textContentType="emailAddress"
-        ></SwiperTextInput>
+        ></SimpleTextInput>
 
-        <SwiperTextInput
+        <SimpleTextInput
+          width={elementWidth}
+          height={elementHeight}
           placeholder="Password"
           value={password}
           onChangeText={(text) => setPassword(text)}
           autoCompleteType="password"
           textContentType="password"
           secureTextEntry={true}
-        ></SwiperTextInput>
+        ></SimpleTextInput>
       </View>
-    </>
+
+      <View style={styles.footer}>
+        <SwiperButton
+          width={elementWidth + 5}
+          height={elementHeight + 5}
+          title="Login"
+          onPress={() => {}}
+        ></SwiperButton>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 3,
+    backgroundColor: globalVariables.darkBackground,
     alignItems: "center",
     justifyContent: "center",
-    width: 100,
-    height: 100,
   },
-  title: {
+  form: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  header: {
+    flex: 1,
     fontSize: 50,
+    color: globalVariables.light,
+  },
+  footer: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
 
