@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { View, StyleSheet, Text } from "react-native"
 import SimpleTextInput from "../components/SimpleTextInput"
 import SwiperButton from "../components/SwiperButton"
-import SwiperTextInput from "../components/SwiperTextInput"
 import { globalVariables } from "../GlobalStyles"
 
 const Login = () => {
@@ -18,7 +17,7 @@ const Login = () => {
                 <Text>Login</Text>
             </View>
             <View style={styles.form}>
-                <SwiperTextInput
+                <SimpleTextInput
                     width={elementWidth}
                     height={elementHeight}
                     value={email}
@@ -26,7 +25,7 @@ const Login = () => {
                     onChangeText={(text) => setEmail(text)}
                     autoCompleteType="email"
                     textContentType="emailAddress"
-                ></SwiperTextInput>
+                ></SimpleTextInput>
 
                 <SimpleTextInput
                     width={elementWidth}
