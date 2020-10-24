@@ -14,6 +14,7 @@ import { globalVariables } from "../GlobalStyles"
 interface ImageCardProps {
   source: ImageSourcePropType
   title: string
+  description?: string
   withShadow?: boolean
   withDarkGradient?: boolean
   style?: StyleProp<ViewStyle>
@@ -37,7 +38,7 @@ export default function ImageCard({
   }
 
   return (
-    <View style={props.style}>
+    <View style={[styles.container, props.style]}>
       <ImageBackground
         source={props.source}
         imageStyle={styles.image}
@@ -57,7 +58,12 @@ export default function ImageCard({
           ></LinearGradient>
         )}
         <View style={styles.galleryControl}></View>
-        <Text style={styles.title}>{props.title}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{props.title}</Text>
+          {props.description && (
+            <Text style={styles.desc}>{props.description}</Text>
+          )}
+        </View>
       </ImageBackground>
     </View>
   )
@@ -72,10 +78,11 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     flex: 1,
-    justifyContent: "space-between",
     borderRadius: 10,
     position: "relative",
     zIndex: -1,
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   image: {
     resizeMode: "cover",
@@ -83,11 +90,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   title: {
-    zIndex: 100,
     color: globalVariables.light,
     fontFamily: globalVariables.montserrat600SemiBold,
     fontSize: 30,
-    margin: 10,
+  },
+  desc: {
+    color: globalVariables.light,
+    fontFamily: globalVariables.montserrat400Regular,
+    fontSize: 18,
+  },
+  textContainer: {
+    // height: 100,
+    marginLeft: 15,
+    marginBottom: 15,
+    zIndex: 100,
   },
   galleryControl: {},
   darkGradient: {

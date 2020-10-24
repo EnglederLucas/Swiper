@@ -1,14 +1,32 @@
 import React from "react"
-import { View, StyleSheet, Text } from "react-native"
+import { View, StyleSheet, Text, ImageSourcePropType } from "react-native"
 import IconButton from "../components/IconButton"
 import { globalVariables } from "../GlobalStyles"
 import ImageCard from "./ImageCard"
-const image = {
-  uri:
-    "https://image.tmdb.org/t/p/w600_and_h900_bestv2/7uJYadq29ZfZojh8YycsvQbY9y5.jpg",
-}
-// import Cross from "../assets/icons/Back.svg"
-// import { CrossIcon } from "../components/SvgIcons"
+import Swiper from "react-native-deck-swiper"
+// import { Interactable } from "react-native-redash/lib/module/v1"
+
+const demoCards: { title: string; source: ImageSourcePropType }[] = [
+  {
+    title: "Star Wars",
+    source: {
+      uri:
+        "https://image.tmdb.org/t/p/w600_and_h900_bestv2/7uJYadq29ZfZojh8YycsvQbY9y5.jpg",
+    },
+  },
+  {
+    title: "Teenage Bounty Hunters",
+    source: {
+      uri: "https://image.tmdb.org/t/p/w1280/gFtJaWcLAJJsSzfuWcLSeAS8aVl.jpg",
+    },
+  },
+  {
+    title: "Titanic",
+    source: {
+      uri: "https://image.tmdb.org/t/p/w1280/AsvlvNiSmCYDWuedlAAVRzNDzPv.jpg",
+    },
+  },
+]
 
 export default function Swipe(): JSX.Element {
   return (
@@ -16,11 +34,14 @@ export default function Swipe(): JSX.Element {
       <View style={styles.navBar}>
         <Text>Navbar</Text>
       </View>
-      <ImageCard
-        style={styles.imageCard}
-        source={image}
-        title="Star Wars"
-      ></ImageCard>
+
+      <Swiper
+        containerStyle={{ height: "20%" }}
+        cardStyle={styles.imageCard}
+        cards={demoCards}
+        renderCard={ImageCard}
+      ></Swiper>
+
       <View style={styles.buttonBar}>
         <IconButton
           size={60}
@@ -28,7 +49,7 @@ export default function Swipe(): JSX.Element {
           icon={require("./../assets/iconsPng/Icons/NoCross.png")}
         ></IconButton>
         <IconButton
-          size={50}
+          size={45}
           iconFactor={0.5}
           iconStyle={{ marginBottom: 2 }}
           icon={require("./../assets/iconsPng/Icons/Star.png")}
@@ -38,12 +59,8 @@ export default function Swipe(): JSX.Element {
           style={{ margin: 15 }}
           iconFactor={0.45}
           icon={require("./../assets/iconsPng/Icons/Heart.png")}
-          iconStyle={{ marginTop: 2 }}
+          iconStyle={{ marginTop: 3 }}
         ></IconButton>
-        {/* <CrossIcon></CrossIcon> */}
-        {/* <Cross></Cross> */}
-        {/* <IconButton size={50}></IconButton>
-        <IconButton size={60} style={{ margin: 15 }}></IconButton> */}
       </View>
     </View>
   )
@@ -60,8 +77,13 @@ const styles = StyleSheet.create({
   imageCard: {
     // width: "90%",
     // height: "80%",
-    width: 505 / 1.32,
-    height: 758 / 1.32,
+
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#E8E8E8",
+    justifyContent: "center",
+    backgroundColor: "white",
   },
   buttonBar: {
     height: "5%",

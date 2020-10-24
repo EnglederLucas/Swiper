@@ -7,8 +7,23 @@ import {
   ViewStyle,
   ImageSourcePropType,
   ImageStyle,
+  Text,
+  TouchableWithoutFeedback,
 } from "react-native"
 import { globalVariables } from "../GlobalStyles"
+import {
+  useTapGestureHandler,
+  withTransition,
+  mix,
+} from "react-native-redash/lib/module/v1"
+import { TapGestureHandler, State } from "react-native-gesture-handler"
+import Animated, {
+  call,
+  cond,
+  eq,
+  useCode,
+  Value,
+} from "react-native-reanimated"
 
 interface IconButtonProps {
   size?: number
@@ -16,7 +31,7 @@ interface IconButtonProps {
   icon: ImageSourcePropType
   iconFactor?: number
   iconStyle?: StyleProp<ImageStyle>
-  onClick?: (e: Event) => void
+  onClick?: () => void
 }
 
 const IconButton = ({
@@ -24,6 +39,21 @@ const IconButton = ({
   iconFactor = 0.38,
   ...props
 }: IconButtonProps): JSX.Element => {
+  const { gestureHandler, state } = useTapGestureHandler()
+  useCode(
+    () =>
+      cond(
+        eq(state, State.END),
+        call([], () => props.onClick())
+      ),
+    [state]
+  )
+
+  const active = new Value(-1)
+
+  const progress = withTransition(eq(state, State.BEGAN))
+  const scale = mix(progress, 1, 0.5)
+
   const styles = StyleSheet.create({
     container: {
       width: size,
@@ -44,16 +74,19 @@ const IconButton = ({
   })
 
   return (
-    <View style={[props.style, styles.container]}>
-      <View
-        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
-      >
-        <Image
-          source={props.icon}
-          style={[props.iconStyle, styles.image]}
-        ></Image>
-      </View>
-    </View>
+    <>
+      <TapGestureHandler {...gestureHandler}>
+        <Animated.View
+          style={[
+            styles.container,
+            props.style,
+            { transform: [{ scale: scale }] },
+          ]}
+        >
+          <Animated.Image style={styles.image} source={props.icon} />
+        </Animated.View>
+      </TapGestureHandler>
+    </>
   )
 }
 
