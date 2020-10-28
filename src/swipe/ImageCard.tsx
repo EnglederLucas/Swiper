@@ -1,5 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient"
-import React from "react"
+import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -8,16 +8,16 @@ import {
   Text,
   StyleProp,
   ViewStyle,
-} from "react-native"
-import { globalVariables } from "../GlobalStyles"
+} from "react-native";
+import { globalVariables } from "../GlobalStyles";
 
 interface ImageCardProps {
-  source: ImageSourcePropType
-  title: string
-  description?: string
-  withShadow?: boolean
-  withDarkGradient?: boolean
-  style?: StyleProp<ViewStyle>
+  source: ImageSourcePropType;
+  title: string;
+  description?: string;
+  withShadow?: boolean;
+  withDarkGradient?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function ImageCard({
@@ -35,15 +35,14 @@ export default function ImageCard({
     shadowRadius: 11.95,
 
     elevation: 18,
-  }
+  };
 
   return (
     <View style={[styles.container, props.style]}>
       <ImageBackground
         source={props.source}
         imageStyle={styles.image}
-        style={[withShadow ? shadowStyle : null, styles.imageBackground]}
-      >
+        style={[withShadow ? shadowStyle : null, styles.imageBackground]}>
         {withDarkGradient && (
           <LinearGradient
             start={{ x: 0.5, y: 0.5 }}
@@ -54,8 +53,7 @@ export default function ImageCard({
               "rgba(34, 35, 37, 0.4)",
               "rgba(34, 35, 37, 0.85)",
             ]}
-            style={styles.darkGradient}
-          ></LinearGradient>
+            style={styles.darkGradient}></LinearGradient>
         )}
         <View style={styles.galleryControl}></View>
         <View style={styles.textContainer}>
@@ -66,7 +64,7 @@ export default function ImageCard({
         </View>
       </ImageBackground>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -114,4 +112,4 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 10,
   },
-})
+});

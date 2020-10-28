@@ -1,9 +1,9 @@
-import React from "react"
-import { View, StyleSheet, Text, ImageSourcePropType } from "react-native"
-import IconButton from "../components/IconButton"
-import { globalVariables } from "../GlobalStyles"
-import ImageCard from "./ImageCard"
-import Swiper from "react-native-deck-swiper"
+import React from "react";
+import { View, StyleSheet, Text, ImageSourcePropType } from "react-native";
+import IconButton from "../components/IconButton";
+import { globalVariables } from "../GlobalStyles";
+import ImageCard from "./ImageCard";
+import Swiper from "react-native-deck-swiper";
 // import { Interactable } from "react-native-redash/lib/module/v1"
 
 const demoCards: { title: string; source: ImageSourcePropType }[] = [
@@ -26,7 +26,7 @@ const demoCards: { title: string; source: ImageSourcePropType }[] = [
       uri: "https://image.tmdb.org/t/p/w1280/AsvlvNiSmCYDWuedlAAVRzNDzPv.jpg",
     },
   },
-]
+];
 
 export default function Swipe(): JSX.Element {
   return (
@@ -39,38 +39,34 @@ export default function Swipe(): JSX.Element {
         containerStyle={{ height: "20%" }}
         cardStyle={styles.imageCard}
         cards={demoCards}
-        renderCard={ImageCard}
-      ></Swiper>
+        renderCard={ImageCard}></Swiper>
 
       <View style={styles.buttonBar}>
         <IconButton
           size={60}
           style={{ margin: 15 }}
-          icon={require("./../assets/iconsPng/Icons/NoCross.png")}
-        ></IconButton>
+          icon={require("./../assets/iconsPng/Icons/NoCross.png")}></IconButton>
         <IconButton
           size={45}
           iconFactor={0.5}
           iconStyle={{ marginBottom: 2 }}
-          icon={require("./../assets/iconsPng/Icons/Star.png")}
-        ></IconButton>
+          icon={require("./../assets/iconsPng/Icons/Star.png")}></IconButton>
         <IconButton
           size={60}
           style={{ margin: 15 }}
           iconFactor={0.45}
           icon={require("./../assets/iconsPng/Icons/Heart.png")}
-          iconStyle={{ marginTop: 3 }}
-        ></IconButton>
+          iconStyle={{ marginTop: 3 }}></IconButton>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     flex: 3,
-    backgroundColor: globalVariables.darkBackground2,
+    backgroundColor: globalVariables.darkBackgroundSwipeView,
     justifyContent: "space-between",
     alignItems: "center",
   },
@@ -81,9 +77,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: "#E8E8E8",
+    // borderColor: "#E8E8E8",
     justifyContent: "center",
-    backgroundColor: "white",
   },
   buttonBar: {
     height: "5%",
@@ -95,4 +90,4 @@ const styles = StyleSheet.create({
   navBar: {
     height: "10%",
   },
-})
+});
