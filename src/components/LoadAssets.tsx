@@ -11,6 +11,7 @@ import {
   Montserrat_300Light,
   Montserrat_500Medium,
   Montserrat_600SemiBold,
+  Montserrat_200ExtraLight,
 } from "@expo-google-fonts/montserrat";
 
 const NAVIGATION_STATE_KEY = `NAVIGATION_STATE_KEY-${Constants.manifest.sdkVersion}`;
@@ -72,6 +73,7 @@ const LoadAssets = ({ assets, fonts, children }: LoadAssetsProps) => {
     Montserrat_300Light,
     Montserrat_500Medium,
     Montserrat_600SemiBold,
+    Montserrat_200ExtraLight,
   });
 
   if (!ready || !isNavigationReady || !fontsLoaded) {

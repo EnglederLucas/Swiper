@@ -14,23 +14,21 @@ export default function SwiperButton({
   width = 260,
   height = 50,
   ...props
-}: SwiperButtonProps & ButtonProps) {
+}: SwiperButtonProps & ButtonProps): JSX.Element {
   return (
     <LinearGradient
       start={{ x: 0.0, y: 0.5 }}
       end={{ x: 1.0, y: 0.5 }}
       colors={[globalVariables.primaryOne, globalVariables.primaryTwo]}
-      style={{ width, height, borderRadius: 50, justifyContent: "center" }}
-    >
+      style={{ width, height, borderRadius: 50, justifyContent: "center" }}>
       <Text
         style={{
           fontSize: height / 2.5,
-          fontFamily: "Montserrat_600SemiBold",
+          fontFamily: globalVariables.montserrat600SemiBold,
           textAlign: "center",
           color: "#ffffff",
           backgroundColor: "transparent",
-        }}
-      >
+        }}>
         {title.toUpperCase()}
       </Text>
     </LinearGradient>
