@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Swiper from "react-native-deck-swiper";
 import {
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   ImageSourcePropType,
   ScrollView,
   Text,
+  Image,
   Dimensions,
 } from "react-native";
 import ImageCard from "./ImageCard";
@@ -16,13 +17,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StackScreenProps } from "@react-navigation/stack";
 import { AuthenticationStackParameterList } from "./../../App";
 import DetailView from "./DetailView";
+import { WINDOW_HEIGHT } from "../utils/Utils";
+import { AppendType, TmdbService } from "../services/TmdbService";
+import { ImagePosterSize, MovieResponse } from "../contracts/TmdbTypes";
 
 type NavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
   "Swipe"
 >;
 
-const demoCards: {
+const oldDemoCards: {
   title: string;
   description?: string;
   source: ImageSourcePropType;
@@ -89,34 +93,63 @@ const demoCards: {
   },
 ];
 
+const movieIds = [19995, 597, 24428, 12445, 122, 38356, 49026, 58, 10193];
+
 export default function SwipePremade({
   navigation,
 }: NavigationProps): JSX.Element {
   const buttonBarHeight = 90;
-  const screenHeight = Dimensions.get("screen").height;
+  const screenHeight = Dimensions.get("window").height;
 
   const swiper = useRef<Swiper<any>>(null);
   const scrollView = useRef<ScrollView>(null);
 
+  const [movieQueue, setMovieQueue] = useState<MovieResponse[]>([]);
+
+  const [currentMovie, setCurrentMovie] = useState<MovieResponse>();
+  const [currentMovieId, setCurrentMovieId] = useState<number>(movieIds[0]);
+
+  useEffect(() => {
+    const service = TmdbService.getInstance();
+    console.log("JO");
+
+    console.log("Joe");
+    // movieIds.map(movieId =>
+    //   service
+    //     .fetchMovie(movieId)
+    //     .then(movie => setMovieQueue(q => q.concat(movie)))
+    //     .then(movie => console.log(movie))
+    // );
+
+    const fetchedMovies = Promise.all(
+      movieIds.map(movieId => service.fetchMovie(movieId))
+    );
+    fetchedMovies.then(fM => setMovieQueue(fM));
+  }, []);
+
   const [state, setState] = useState({
-    cards: demoCards,
     swipedAllCards: false,
     swipeDirection: "",
-    cardIndex: 0,
   });
 
-  function renderCard(card: {
-    title: string;
-    description?: string;
-    source: ImageSourcePropType;
-  }): JSX.Element {
+  const [cardIndex, setCardIndex] = useState(0);
+
+  function renderCard(movie: MovieResponse): JSX.Element {
     return (
-      <View style={styles.card}>
+      <View
+        style={{
+          flex: 1,
+          borderRadius: 10,
+          justifyContent: "center",
+        }}>
         <ImageCard
           style={{ height: "100%" }}
-          source={card.source}
-          title={card.title}
-          description={card.description}></ImageCard>
+          source={TmdbService.getImageSource<ImagePosterSize>(
+            movie?.poster_path,
+            "w780"
+          )}
+          title={movie?.title}
+          description={movie?.tagline}></ImageCard>
       </View>
     );
   }
@@ -151,6 +184,15 @@ export default function SwipePremade({
 
   const onSwiped = type => {
     console.log(`on swiped ${type}`);
+    console.log("CardIndex", cardIndex);
+
+    setCurrentMovie(movieQueue[cardIndex]);
+    setCurrentMovieId(movieIds[cardIndex + 1]);
+    setCardIndex(cardIndex + 1);
+    // Returns first value
+    console.log(movieQueue);
+    console.log(currentMovie);
+    console.log("CardIndex", cardIndex);
   };
 
   const onSwipedAllCards = () => {
@@ -225,20 +267,24 @@ export default function SwipePremade({
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         decelerationRate="fast"
+        disableScrollViewPanResponder
         snapToOffsets={[screenHeight]}
         snapToStart={true}
         snapToEnd={false}
         indicatorStyle={"white"}>
-        <View style={{ height: screenHeight }}>
+        <View
+          style={{
+            height: WINDOW_HEIGHT,
+            // borderColor: "green",
+            // borderWidth: 3,
+          }}>
           <View style={styles.swipeContainer}>
             <Swiper
               ref={swiper}
+              disableBottomSwipe
               containerStyle={{
                 backgroundColor: globalVariables.darkBackgroundSwipeView,
               }}
-              onSwiped={() =>
-                setState(s => ({ ...s, cardIndex: s.cardIndex + 1 }))
-              }
               onSwipedLeft={() => onSwiped("left")}
               onSwipedRight={() => onSwiped("right")}
               onSwipedTop={() => onSwiped("top")}
@@ -250,13 +296,14 @@ export default function SwipePremade({
                   animated: true,
                 })
               }
-              cards={state.cards}
+              onTapCardDeadZone={3}
+              cards={movieQueue}
               // horizontalThreshold={}
-              cardIndex={state.cardIndex}
+              cardIndex={cardIndex}
               cardVerticalMargin={100}
               renderCard={renderCard}
               onSwipedAll={onSwipedAllCards}
-              //inputRotationRange
+              // inputRotationRange
               //outputRotationRange
               stackSize={3}
               stackSeparation={0}
@@ -278,54 +325,75 @@ export default function SwipePremade({
                   },
                 },
                 left: {
+                  element: (
+                    <>
+                      <Image
+                        style={{
+                          height: 175,
+                          width: 175,
+                          resizeMode: "contain",
+                          justifyContent: "center",
+                          top: 0,
+                        }}
+                        source={require("./../../assets/iconsPng/Icons/NOPETag.png")}></Image>
+                    </>
+                  ) /* Optional */,
                   title: "NOPE",
                   style: {
-                    label: {
-                      borderColor: "white",
-                      color: "white",
-                      padding: 20,
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                    },
                     wrapper: {
                       flexDirection: "column",
                       alignItems: "flex-end",
                       justifyContent: "flex-start",
-                      marginTop: 30,
+                      marginTop: -10,
                       marginLeft: -30,
                     },
                   },
                 },
                 right: {
+                  element: (
+                    <>
+                      <Image
+                        style={{
+                          height: 150,
+                          width: 150,
+                          resizeMode: "contain",
+                          justifyContent: "center",
+                          top: 0,
+                        }}
+                        source={require("./../../assets/iconsPng/Icons/LIKETag.png")}></Image>
+                    </>
+                  ) /* Optional */,
                   title: "LIKE",
                   style: {
-                    label: {
-                      borderColor: "white",
-                      color: "white",
-                      padding: 20,
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                    },
                     wrapper: {
                       flexDirection: "column",
                       alignItems: "flex-start",
                       justifyContent: "flex-start",
-                      marginTop: 30,
                       marginLeft: 30,
                     },
                   },
                 },
                 top: {
-                  title: "SUPER LIKE",
+                  element: (
+                    <>
+                      <Image
+                        style={{
+                          height: 225,
+                          width: 225,
+                          resizeMode: "contain",
+                          justifyContent: "center",
+                          top: 0,
+                        }}
+                        source={require("./../../assets/iconsPng/Icons/SUPERLIKETag.png")}></Image>
+                    </>
+                  ) /* Optional */,
+                  title: "Super Like",
                   style: {
-                    label: {
-                      borderColor: "white",
-                      color: "white",
-                      padding: 20,
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                    },
                     wrapper: {
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
+                      marginTop: 100,
                     },
                   },
                 },
@@ -335,7 +403,17 @@ export default function SwipePremade({
               swipeBackCard></Swiper>
           </View>
         </View>
-        <DetailView movieId={550}></DetailView>
+        <View
+          style={
+            {
+              // borderColor: "green",
+              // borderWidth: 3,
+            }
+          }>
+          <DetailView
+            movieId={currentMovieId}
+            buttonBarHeight={buttonBarHeight}></DetailView>
+        </View>
       </ScrollView>
       <ButtonBarWithLinearGradient></ButtonBarWithLinearGradient>
     </View>
@@ -343,10 +421,15 @@ export default function SwipePremade({
 }
 
 const styles = StyleSheet.create({
-  details: {},
-  container: {
+  details: {
     flex: 1,
-    backgroundColor: "white",
+    position: "relative",
+  },
+  container: {
+    flex: 2,
+    backgroundColor: globalVariables.darkBackgroundSwipeView,
+    justifyContent: "space-between",
+    flexDirection: "column",
   },
   swipeContainer: {
     // height: "92%",
@@ -358,6 +441,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexDirection: "column",
+    flex: 2,
   },
   scrollContent: {},
   buttonContainer: {

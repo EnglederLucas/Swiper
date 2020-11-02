@@ -66,7 +66,7 @@ const IconButton = ({
     image: {
       height: size * iconFactor,
       width: size * iconFactor,
-      resizeMode: "center",
+      resizeMode: "contain",
     },
   });
 
