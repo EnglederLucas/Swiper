@@ -340,7 +340,10 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
                 color: globalVariables.light,
                 fontFamily: globalVariables.montserrat500Medium,
               }}>
-              {movie?.credits?.crew?.find(c => c.job === "Director").name}
+              {
+                movie?.credits?.crew?.find(c => c.job.includes("Director"))
+                  ?.name
+              }
             </Text>
           </View>
 
@@ -359,16 +362,14 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
                 fontSize: 20,
                 color: globalVariables.light,
                 fontFamily: globalVariables.montserrat200ExtraLight,
+                marginRight: 10,
               }}>
               {`${movie?.runtime.toString()}m`}
             </Text>
           </View>
         </View>
 
-        {/* <View style={[styles.poster_container]}> */}
         <Image
-          // width={Dimensions.get("window").width}
-          // height={(Dimensions.get("window").width * 16) / 9}
           style={{
             padding: height === 250 ? 20 : 0,
             margin: height === 250 ? 10 : 0,
@@ -387,7 +388,6 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
             movie?.poster_path,
             "w185"
           )}></Image>
-        {/* </View> */}
       </View>
       {includeDescription && (
         <Description
@@ -430,21 +430,22 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
         </>
       </PersonList>
 
-      <PersonList title={"Crew"} border={"none"}>
+      <PersonList title={"Crew"} border={"none"} height={220}>
         <>
-          {TmdbService.getOrderedCrewByImportance(movie?.credits?.crew)
-            .slice(0, 15)
-            .map(c => (
-              <PersonCard
-                name={c.name}
-                role={c.job}
-                profile_path={c.profile_path}
-                key={c.credit_id}
-                size={70}
-                marginTopBottom={15}
-                marginLeft={5}
-                borderRadius={10}></PersonCard>
-            ))}
+          {TmdbService.getOrderedCrewWithGroupedJobs(
+            movie?.credits?.crew,
+            15
+          ).map(c => (
+            <PersonCard
+              name={c.name}
+              role={c.job}
+              profile_path={c.profile_path}
+              key={c.credit_id}
+              size={70}
+              marginTopBottom={15}
+              marginLeft={5}
+              borderRadius={10}></PersonCard>
+          ))}
         </>
       </PersonList>
 
