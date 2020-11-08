@@ -298,13 +298,12 @@ export default function SwipePremade({
               }
               onTapCardDeadZone={3}
               cards={movieQueue}
-              // horizontalThreshold={}
               cardIndex={cardIndex}
               cardVerticalMargin={100}
               renderCard={renderCard}
               onSwipedAll={onSwipedAllCards}
               // inputRotationRange
-              //outputRotationRange
+              outputRotationRange={["-20deg", "0deg", "20deg"]}
               stackSize={3}
               stackSeparation={0}
               overlayLabels={{

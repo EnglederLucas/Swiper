@@ -183,17 +183,57 @@ export class TmdbService {
     }
   }
 
-  public static getOrderedCrewByImportance(crew: CrewPerson[]): CrewPerson[] {
+  public static getOrderedCrew(
+    crew: CrewPerson[],
+    length: number
+  ): CrewPerson[] {
     if (crew === null || crew === undefined) return [];
 
     crew.sort((a, b) => {
       if (!a.profile_path) return 1;
       if (!b.profile_path) return -1;
 
-      return CrewDepartment[a.department] - CrewDepartment[b.department];
+      return (
+        ((CrewDepartment[a.department] as unknown) as number) -
+        ((CrewDepartment[b.department] as unknown) as number)
+      );
     });
 
-    return crew;
+    return crew.splice(0, length);
+  }
+
+  public static getOrderedCrewWithGroupedJobs(
+    crew: CrewPerson[],
+    length: number
+  ): CrewPerson[] {
+    if (crew === null || crew === undefined) return [];
+
+    crew.sort((a, b) => {
+      if (!a.profile_path) return 1;
+      if (!b.profile_path) return -1;
+
+      return (
+        ((CrewDepartment[a.department] as unknown) as number) -
+        ((CrewDepartment[b.department] as unknown) as number)
+      );
+    });
+
+    crew.forEach((crewPerson, index) => {
+      const first = crew.find(
+        (c, i) =>
+          c.id === crewPerson.id &&
+          c.credit_id !== crewPerson.credit_id &&
+          i < index
+      );
+      if (first) {
+        if (!first.job.includes(crewPerson.job)) {
+          first.job += ", " + crewPerson.job;
+        }
+        crew = crew.filter(c => c.credit_id !== crewPerson.credit_id);
+      }
+    });
+
+    return crew.splice(0, length);
   }
 
   public setNewApikey(newApiKey: string): void {
