@@ -1,11 +1,8 @@
 import React from "react";
 import Login from "./src/login/Login";
 import { LoadAssets } from "./src/components";
-import Swipe from "./src/swipe/Swipe";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import SwipePremade from "./src/swipe/SwipePremade";
-import { registerRootComponent } from "expo";
 import DetailView from "./src/swipe/DetailView";
 import { ImageSourcePropType } from "react-native";
 
@@ -21,6 +18,8 @@ export const AuthenticationStack = createStackNavigator<
 
 const AuthenticationNavigator = () => {
   // TODO:Add Navbar
+
+  //headerMode="none"
   return (
     <AuthenticationStack.Navigator headerMode="none">
       <AuthenticationStack.Screen
