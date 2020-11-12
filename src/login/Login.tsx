@@ -2,13 +2,42 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SwiperButton, SimpleTextInput } from "../components";
 import { globalVariables } from "../GlobalStyles";
+import { firebase } from "../firebaseconfig";
+import { useNavigation } from '@react-navigation/native';
 
 const Login = (): JSX.Element => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigation = useNavigation();
+
   const elementWidth = 260;
   const elementHeight = 45;
+
+  const onLoginPressed = () => {
+    firebase.auth().signInWithEmailAndPassword(email,password)
+    .then((response) => {
+      const uid = response.user.uid;
+      const usersRef = firebase.firestore().collection('users')
+
+      usersRef.doc(uid).get()
+        .then(firestoreDocument => {
+          if(!firestoreDocument.exists) {
+            alert("User does not exist!")
+            return;
+          }
+          const user = firestoreDocument.data()
+          navigation.navigate('Swipe')
+        })
+        .catch(e => {
+          alert(e)
+        });
+    })
+    .catch(e => {
+      alert(e)
+    })
+  }
 
   return (
     <View style={styles.container}>
@@ -41,11 +70,11 @@ const Login = (): JSX.Element => {
           width={elementWidth + 5}
           height={elementHeight + 5}
           title="Login"
-          onPress={() => {}}></SwiperButton>
+          onPress={() => onLoginPressed()}></SwiperButton>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
