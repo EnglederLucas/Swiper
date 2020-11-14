@@ -17,9 +17,6 @@ const SignUp = (): JSX.Element => {
   const elementHeight = 45;
 
   const onSignUpPressed = () => {
-    if (!validate) {
-      return;
-    }
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
