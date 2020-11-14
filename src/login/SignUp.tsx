@@ -1,4 +1,4 @@
-import React, { isValidElement, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SwiperButton, SimpleTextInput } from "../components";
 import { globalVariables } from "../GlobalStyles";
