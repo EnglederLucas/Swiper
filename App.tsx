@@ -4,7 +4,6 @@ import { LoadAssets } from "./src/components";
 import Swipe from "./src/swipe/Swipe";
 import { createStackNavigator } from "@react-navigation/stack";
 import SwipePremade from "./src/swipe/SwipePremade";
-import { registerRootComponent } from "expo";
 import DetailView from "./src/swipe/DetailView";
 import { ImageSourcePropType } from "react-native";
 import SignUp from "./src/login/SignUp";
