@@ -14,6 +14,8 @@ import {
   Montserrat_200ExtraLight,
 } from "@expo-google-fonts/montserrat";
 
+import {firebase} from '../firebaseconfig';
+
 const NAVIGATION_STATE_KEY = `NAVIGATION_STATE_KEY-${Constants.manifest.sdkVersion}`;
 
 export type FontSource = Parameters<typeof Font.loadAsync>[0];
@@ -67,6 +69,8 @@ const LoadAssets = ({ assets, fonts, children }: LoadAssetsProps) => {
     state => AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state)),
     []
   );
+
+  firebase.initializeApp;
 
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
