@@ -20,8 +20,9 @@ import DetailView from "./DetailView";
 import { WINDOW_HEIGHT } from "../utils/Utils";
 import { AppendType, TmdbService } from "../services/TmdbService";
 import { ImagePosterSize, MovieResponse } from "../contracts/TmdbTypes";
+import NavBar from "../components/NavBar";
 
-type NavigationProps = StackScreenProps<
+export type SwipeNavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
   "Swipe"
 >;
@@ -97,7 +98,7 @@ const movieIds = [19995, 597, 24428, 12445, 122, 38356, 49026, 58, 10193];
 
 export default function SwipePremade({
   navigation,
-}: NavigationProps): JSX.Element {
+}: SwipeNavigationProps): JSX.Element {
   const buttonBarHeight = 90;
   const screenHeight = Dimensions.get("window").height;
 
@@ -111,9 +112,6 @@ export default function SwipePremade({
 
   useEffect(() => {
     const service = TmdbService.getInstance();
-    console.log("JO");
-
-    console.log("Joe");
     // movieIds.map(movieId =>
     //   service
     //     .fetchMovie(movieId)
@@ -261,161 +259,165 @@ export default function SwipePremade({
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        ref={scrollView}
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
-        decelerationRate="fast"
-        disableScrollViewPanResponder
-        snapToOffsets={[screenHeight]}
-        snapToStart={true}
-        snapToEnd={false}
-        indicatorStyle={"white"}>
-        <View
-          style={{
-            height: WINDOW_HEIGHT,
-            // borderColor: "green",
-            // borderWidth: 3,
-          }}>
-          <View style={styles.swipeContainer}>
-            <Swiper
-              ref={swiper}
-              disableBottomSwipe
-              containerStyle={{
-                backgroundColor: globalVariables.darkBackgroundSwipeView,
-              }}
-              onSwipedLeft={() => onSwiped("left")}
-              onSwipedRight={() => onSwiped("right")}
-              onSwipedTop={() => onSwiped("top")}
-              // onSwipedBottom={() => this.onSwiped("bottom")}
-              onTapCard={() =>
-                scrollView.current.scrollTo({
-                  x: 0,
-                  y: screenHeight,
-                  animated: true,
-                })
-              }
-              onTapCardDeadZone={3}
-              cards={movieQueue}
-              cardIndex={cardIndex}
-              cardVerticalMargin={100}
-              renderCard={renderCard}
-              onSwipedAll={onSwipedAllCards}
-              // inputRotationRange
-              outputRotationRange={["-20deg", "0deg", "20deg"]}
-              stackSize={3}
-              stackSeparation={0}
-              overlayLabels={{
-                bottom: {
-                  title: "BLEAH",
-                  style: {
-                    label: {
-                      borderColor: "white",
-                      color: "white",
-                      padding: 20,
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                    },
-                    wrapper: {
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    },
-                  },
-                },
-                left: {
-                  element: (
-                    <>
-                      <Image
-                        style={{
-                          height: 175,
-                          width: 175,
-                          resizeMode: "contain",
-                          justifyContent: "center",
-                          top: 0,
-                        }}
-                        source={require("./../../assets/iconsPng/Icons/NOPETag.png")}></Image>
-                    </>
-                  ) /* Optional */,
-                  title: "NOPE",
-                  style: {
-                    wrapper: {
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      justifyContent: "flex-start",
-                      marginTop: -10,
-                      marginLeft: -30,
-                    },
-                  },
-                },
-                right: {
-                  element: (
-                    <>
-                      <Image
-                        style={{
-                          height: 150,
-                          width: 150,
-                          resizeMode: "contain",
-                          justifyContent: "center",
-                          top: 0,
-                        }}
-                        source={require("./../../assets/iconsPng/Icons/LIKETag.png")}></Image>
-                    </>
-                  ) /* Optional */,
-                  title: "LIKE",
-                  style: {
-                    wrapper: {
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      justifyContent: "flex-start",
-                      marginLeft: 30,
-                    },
-                  },
-                },
-                top: {
-                  element: (
-                    <>
-                      <Image
-                        style={{
-                          height: 225,
-                          width: 225,
-                          resizeMode: "contain",
-                          justifyContent: "center",
-                          top: 0,
-                        }}
-                        source={require("./../../assets/iconsPng/Icons/SUPERLIKETag.png")}></Image>
-                    </>
-                  ) /* Optional */,
-                  title: "Super Like",
-                  style: {
-                    wrapper: {
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginTop: 100,
-                    },
-                  },
-                },
-              }}
-              animateOverlayLabelsOpacity
-              animateCardOpacity
-              swipeBackCard></Swiper>
-          </View>
-        </View>
-        <View
-          style={
-            {
+    <>
+      <NavBar></NavBar>
+
+      <View style={styles.container}>
+        <ScrollView
+          ref={scrollView}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
+          decelerationRate="fast"
+          disableScrollViewPanResponder
+          snapToOffsets={[screenHeight]}
+          snapToStart={true}
+          snapToEnd={false}
+          indicatorStyle={"white"}>
+          <View
+            style={{
+              height: WINDOW_HEIGHT,
               // borderColor: "green",
               // borderWidth: 3,
-            }
-          }>
-          <DetailView
-            movieId={currentMovieId}
-            buttonBarHeight={buttonBarHeight}></DetailView>
-        </View>
-      </ScrollView>
-      <ButtonBarWithLinearGradient></ButtonBarWithLinearGradient>
-    </View>
+            }}>
+            <View style={styles.swipeContainer}>
+              <Swiper
+                ref={swiper}
+                disableBottomSwipe
+                containerStyle={{
+                  backgroundColor: globalVariables.darkBackgroundSwipeView,
+                }}
+                onSwipedLeft={() => onSwiped("left")}
+                onSwipedRight={() => onSwiped("right")}
+                onSwipedTop={() => onSwiped("top")}
+                // onSwipedBottom={() => this.onSwiped("bottom")}
+                onTapCard={() =>
+                  scrollView.current.scrollTo({
+                    x: 0,
+                    y: screenHeight,
+                    animated: true,
+                  })
+                }
+                onTapCardDeadZone={3}
+                cards={movieQueue}
+                cardIndex={cardIndex}
+                cardVerticalMargin={125}
+                renderCard={renderCard}
+                onSwipedAll={onSwipedAllCards}
+                // inputRotationRange
+                outputRotationRange={["-20deg", "0deg", "20deg"]}
+                stackSize={3}
+                stackSeparation={0}
+                overlayLabels={{
+                  bottom: {
+                    title: "BLEAH",
+                    style: {
+                      label: {
+                        borderColor: "white",
+                        color: "white",
+                        padding: 20,
+                        backgroundColor: "rgba(255,255,255,0.8)",
+                      },
+                      wrapper: {
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      },
+                    },
+                  },
+                  left: {
+                    element: (
+                      <>
+                        <Image
+                          style={{
+                            height: 175,
+                            width: 175,
+                            resizeMode: "contain",
+                            justifyContent: "center",
+                            top: 0,
+                          }}
+                          source={require("./../../assets/iconsPng/Icons/NOPETag.png")}></Image>
+                      </>
+                    ) /* Optional */,
+                    title: "NOPE",
+                    style: {
+                      wrapper: {
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        justifyContent: "flex-start",
+                        marginTop: -10,
+                        marginLeft: -30,
+                      },
+                    },
+                  },
+                  right: {
+                    element: (
+                      <>
+                        <Image
+                          style={{
+                            height: 150,
+                            width: 150,
+                            resizeMode: "contain",
+                            justifyContent: "center",
+                            top: 0,
+                          }}
+                          source={require("./../../assets/iconsPng/Icons/LIKETag.png")}></Image>
+                      </>
+                    ) /* Optional */,
+                    title: "LIKE",
+                    style: {
+                      wrapper: {
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        marginLeft: 30,
+                      },
+                    },
+                  },
+                  top: {
+                    element: (
+                      <>
+                        <Image
+                          style={{
+                            height: 225,
+                            width: 225,
+                            resizeMode: "contain",
+                            justifyContent: "center",
+                            top: 0,
+                          }}
+                          source={require("./../../assets/iconsPng/Icons/SUPERLIKETag.png")}></Image>
+                      </>
+                    ) /* Optional */,
+                    title: "Super Like",
+                    style: {
+                      wrapper: {
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: 100,
+                      },
+                    },
+                  },
+                }}
+                animateOverlayLabelsOpacity
+                animateCardOpacity
+                swipeBackCard></Swiper>
+            </View>
+          </View>
+          <View
+            style={
+              {
+                // borderColor: "green",
+                // borderWidth: 3,
+              }
+            }>
+            <DetailView
+              movieId={currentMovieId}
+              buttonBarHeight={buttonBarHeight}></DetailView>
+          </View>
+        </ScrollView>
+        <ButtonBarWithLinearGradient></ButtonBarWithLinearGradient>
+      </View>
+    </>
   );
 }
 
@@ -435,7 +437,8 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 900,
     flex: 1,
-    marginBottom: 10,
+    marginTop: 20,
+    // marginBottom: 10,
     zIndex: 100,
   },
   scrollContainer: {

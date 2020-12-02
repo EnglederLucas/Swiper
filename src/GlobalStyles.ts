@@ -15,6 +15,7 @@ export const globalVariables = {
   montserrat500Medium: "Montserrat_500Medium",
   montserrat600SemiBold: "Montserrat_600SemiBold",
   montserrat200ExtraLight: "Montserrat_200ExtraLight",
+  navBarHeight: 100,
 };
 
 export function getHexColorWithAlpha(
