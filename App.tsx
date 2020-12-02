@@ -5,11 +5,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SwipePremade from "./src/swipe/SwipePremade";
 import DetailView from "./src/swipe/DetailView";
 import { ImageSourcePropType } from "react-native";
+import NavBar from "./src/components/NavBar";
+import { SCREEN_WIDTH } from "./src/utils/Utils";
+import { globalVariables } from "./src/GlobalStyles";
+import SwipeCollections from "./src/collections/SwipeCollections";
 
 export type AuthenticationStackParameterList = {
   Swipe: undefined;
   Login: undefined;
   Details: { image: ImageSourcePropType };
+  Collections: undefined;
 };
 
 export const AuthenticationStack = createStackNavigator<
@@ -24,6 +29,14 @@ const AuthenticationNavigator = () => {
     <AuthenticationStack.Navigator headerMode="none">
       <AuthenticationStack.Screen
         name="Swipe"
+        // options={{
+        //   // header: NavBar,
+
+        //   headerStyle: {
+        //     backgroundColor: "blue",
+        //   },
+        // }
+        // }
         component={SwipePremade}></AuthenticationStack.Screen>
       <AuthenticationStack.Screen
         name="Details"
@@ -37,6 +50,9 @@ const AuthenticationNavigator = () => {
       <AuthenticationStack.Screen
         name="Login"
         component={Login}></AuthenticationStack.Screen>
+      <AuthenticationStack.Screen
+        name="Collections"
+        component={SwipeCollections}></AuthenticationStack.Screen>
     </AuthenticationStack.Navigator>
   );
 };
