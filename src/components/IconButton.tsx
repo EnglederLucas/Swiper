@@ -8,7 +8,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { globalVariables } from "../GlobalStyles";
-import {
+import { 
   useTapGestureHandler,
   withTransition,
   mix,
