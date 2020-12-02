@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import Login from "./src/login/Login";
 import { LoadAssets } from "./src/components";
+import Swipe from "./src/swipe/Swipe";
 import { createStackNavigator } from "@react-navigation/stack";
 import SwipePremade from "./src/swipe/SwipePremade";
 import DetailView from "./src/swipe/DetailView";
 import { ImageSourcePropType } from "react-native";
+import SignUp from "./src/login/SignUp";
 
 export type AuthenticationStackParameterList = {
   Swipe: undefined;
   Login: undefined;
+  SignUp: undefined;
   Details: { image: ImageSourcePropType };
 };
 
@@ -17,26 +20,36 @@ export const AuthenticationStack = createStackNavigator<
 >();
 
 const AuthenticationNavigator = () => {
-  // TODO:Add Navbar
+  const [user, setUser] = useState(null);
 
-  //headerMode="none"
+  //TODO:Add Navbar
   return (
     <AuthenticationStack.Navigator headerMode="none">
-      <AuthenticationStack.Screen
-        name="Swipe"
-        component={SwipePremade}></AuthenticationStack.Screen>
-      <AuthenticationStack.Screen
-        name="Details"
-        component={DetailView}
-        initialParams={{
-          image: {
-            uri:
-              "https://image.tmdb.org/t/p/original/uTylq8v3lfMUHMt3n0Tb4bA9CtG.jpg",
-          },
-        }}></AuthenticationStack.Screen>
-      <AuthenticationStack.Screen
-        name="Login"
-        component={Login}></AuthenticationStack.Screen>
+      {user ? (
+        <>
+          <AuthenticationStack.Screen
+            name="Swipe"
+            component={SwipePremade}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
+            name="Details"
+            component={DetailView}
+            initialParams={{
+              image: {
+                uri:
+                  "https://image.tmdb.org/t/p/original/uTylq8v3lfMUHMt3n0Tb4bA9CtG.jpg",
+              },
+            }}></AuthenticationStack.Screen>
+        </>
+      ) : (
+        <>
+          <AuthenticationStack.Screen
+            name="Login"
+            component={Login}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
+            name="SignUp"
+            component={SignUp}></AuthenticationStack.Screen>
+        </>
+      )}
     </AuthenticationStack.Navigator>
   );
 };
