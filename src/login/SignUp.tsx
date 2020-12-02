@@ -6,40 +6,39 @@ import { firebase } from "../firebaseconfig";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
 
-const Login = (): JSX.Element => {
+const SignUp = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigation = useNavigation();
 
   const elementWidth = 260;
   const elementHeight = 45;
 
-  const onLoginPressed = () => {
+  const onSignUpPressed = () => {
     firebase
       .auth()
-      .signInWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(email, password)
       .then(response => {
         const uid = response.user.uid;
+        const data = {
+          id: uid,
+          email,
+        };
         const usersRef = firebase.firestore().collection("users");
-
         usersRef
           .doc(uid)
-          .get()
-          .then(firestoreDocument => {
-            if (!firestoreDocument.exists) {
-              alert("User does not exist!");
-              return;
-            }
-            const user = firestoreDocument.data();
+          .set(data)
+          .then(() => {
             navigation.navigate("Swipe");
           })
-          .catch(e => {
-            alert(e);
+          .catch(error => {
+            alert(error);
           });
       })
-      .catch(e => {
-        alert(e);
+      .catch(error => {
+        alert(error);
       });
   };
 
@@ -69,17 +68,27 @@ const Login = (): JSX.Element => {
           autoCompleteType="password"
           textContentType="password"
           secureTextEntry={true}></SimpleTextInput>
+
+        <SimpleTextInput
+          width={elementWidth}
+          height={elementHeight}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={text => setConfirmPassword(text)}
+          autoCompleteType="password"
+          textContentType="password"
+          secureTextEntry={true}></SimpleTextInput>
       </View>
 
       <View style={styles.footer}>
         <SwiperButton
           width={elementWidth + 5}
           height={elementHeight + 5}
-          title="Login"
-          onPress={() => onLoginPressed()}></SwiperButton>
+          title="Sign Up"
+          onPress={() => onSignUpPressed()}></SwiperButton>
 
-        <Text style={styles.text} onPress={() => navigation.navigate("SignUp")}>
-          Not a user yet? Create an account!
+        <Text style={styles.text} onPress={() => navigation.navigate("Login")}>
+          Already have an account? Sign in
         </Text>
       </View>
     </View>
@@ -121,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;
