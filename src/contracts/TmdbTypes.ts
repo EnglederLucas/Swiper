@@ -271,6 +271,40 @@ export interface Image {
   width: number;
 }
 
+export interface MovieList {
+  created_by: string;
+  description: string;
+  favorite_count: number;
+  id: string;
+  items: MovieListItem[];
+  item_count: number;
+  iso_639_1: string;
+  name: string;
+  poster_path: string;
+}
+
+export interface MovieListItem {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  media_type: MediaType;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: Date;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
+
+export enum MediaType {
+  Movie = "movie",
+}
+
 // export type ImageLogoSize = 45 | 92 | 154 | 185 | 300 | 500 | "original";
 
 // export type ImageBackdropSize = 300 | 780 | 1280 | "original";

@@ -1,131 +1,87 @@
 import React, { useState, useRef, useEffect } from "react";
 import Swiper from "react-native-deck-swiper";
-import {
-  StyleSheet,
-  View,
-  ImageSourcePropType,
-  ScrollView,
-  Text,
-  Image,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, ScrollView, Image, Dimensions } from "react-native";
 import ImageCard from "./ImageCard";
-import { globalVariables, getHexColorWithAlpha } from "../GlobalStyles";
-import IconButton from "../components/IconButton";
+import { globalVariables, getHexColorWithAlpha } from "../../GlobalStyles";
+import IconButton from "../../components/IconButton";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { StackScreenProps } from "@react-navigation/stack";
-import { AuthenticationStackParameterList } from "./../../App";
+import { AuthenticationStackParameterList } from "../../../App";
 import DetailView from "./DetailView";
-import { WINDOW_HEIGHT } from "../utils/Utils";
-import { AppendType, TmdbService } from "../services/TmdbService";
-import { ImagePosterSize, MovieResponse } from "../contracts/TmdbTypes";
-import NavBar from "../components/NavBar";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
+import { AppendType, TmdbService } from "../../services/TmdbService";
+import { ImagePosterSize, MovieResponse } from "../../contracts/TmdbTypes";
+import NavBar from "../../components/NavBar";
+import { FirestoreService } from "../../services/FirestoreService";
 
 export type SwipeNavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
   "Swipe"
 >;
 
-const oldDemoCards: {
-  title: string;
-  description?: string;
-  source: ImageSourcePropType;
-}[] = [
-  {
-    title: "Ranzler",
-    description: "Schau mi an und Schau di an",
-    source: {
-      uri: "https://i.gyazo.com/8ee7f571367d9908283daa5854fadf63.jpg",
-    },
-  },
-  {
-    title: "Da Wirth",
-    source: {
-      uri:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ10O6iFJr8WwFxj-RsWgYxWxY9WQOxS6UsVA&usqp=CAU",
-    },
-  },
-  {
-    title: "Janus",
-    source: {
-      uri: "https://i.gyazo.com/ed2724cf2e7fd5f9140598b30cda84ae.jpg",
-    },
-  },
-  {
-    title: "Kevin",
-    source: {
-      uri: "https://i.gyazo.com/5ab9ad7c8536d55ad3caf981086826d9.jpg",
-    },
-  },
-  {
-    title: "Bernhard Lehner",
-    description: "This guy fucks!",
-    source: {
-      uri: "https://i.gyazo.com/3a5d7fa4e52cec3502f148ba84cc1ad4.png",
-    },
-  },
-  {
-    title: "Daniel uWu",
-    source: {
-      uri: "https://i.gyazo.com/b1a8c8cf7ad6f1e24795439ca33e7d58.png",
-    },
-  },
-  {
-    title: "Lux",
-    source: {
-      uri:
-        "https://i.pinimg.com/originals/3c/eb/23/3ceb23b8b41e8887289ac7c2d4bcb9a9.png",
-    },
-  },
-  {
-    title: "Hofmarcher",
-    source: {
-      uri:
-        "https://nothalfgood.files.wordpress.com/2018/07/fly-rubbing-hands-e1531413955790.jpg?w=426",
-    },
-  },
-  {
-    title: "Chad",
-    description: "Alles Gute zum Geburtstag, Alex!",
-    source: {
-      uri: "https://i.gyazo.com/48014a203e13dd774064bc1cdf10e944.png",
-    },
-  },
-];
-
-const movieIds = [19995, 597, 24428, 12445, 122, 38356, 49026, 58, 10193];
-
 export default function SwipePremade({
-  navigation,
+  route: {
+    params: { collectionId },
+  },
 }: SwipeNavigationProps): JSX.Element {
+  const cardSize = { height: SCREEN_HEIGHT * 0.71, width: SCREEN_WIDTH * 0.97 };
+
   const buttonBarHeight = 90;
   const screenHeight = Dimensions.get("window").height;
 
-  const swiper = useRef<Swiper<any>>(null);
+  const swiper = useRef<Swiper<unknown>>(null);
   const scrollView = useRef<ScrollView>(null);
 
-  const [movieQueue, setMovieQueue] = useState<MovieResponse[]>([]);
+  const [movieQueue, setMovieQueue] = useState<(MovieResponse & AppendType)[]>(
+    []
+  );
 
-  const [currentMovie, setCurrentMovie] = useState<MovieResponse>();
-  const [currentMovieId, setCurrentMovieId] = useState<number>(movieIds[0]);
+  const [, setMovieIds] = useState([]);
+
+  const [currentMovie, setCurrentMovie] = useState<
+    MovieResponse & AppendType
+  >();
 
   useEffect(() => {
+    let isMounted = true; // note this flag denote mount status
+    console.log("Fetching Collections");
+    console.log("CollectionId", collectionId);
+
+    init().then(res => {
+      if (isMounted) {
+        // console.log(res.movieIdList);
+        setMovieIds(res.movieIdList);
+        setMovieQueue(res.fetchedMovies);
+        setCurrentMovie(res.fetchedMovies[cardIndex]);
+      }
+    });
+    console.log("My Collection Id", collectionId);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [collectionId]);
+
+  async function init(): Promise<{
+    movieIdList: number[];
+    fetchedMovies: (MovieResponse & AppendType)[];
+  }> {
     const service = TmdbService.getInstance();
-    // movieIds.map(movieId =>
-    //   service
-    //     .fetchMovie(movieId)
-    //     .then(movie => setMovieQueue(q => q.concat(movie)))
-    //     .then(movie => console.log(movie))
-    // );
+    const firestore = FirestoreService.getInstance();
 
-    const fetchedMovies = Promise.all(
-      movieIds.map(movieId => service.fetchMovie(movieId))
+    const movies = await firestore.getMovieListOfCollection(collectionId);
+
+    const fetchedMovies = await Promise.all(
+      movies.map(movieId =>
+        service.fetchMovieWithAppend(movieId, "videos", "credits")
+      )
     );
-    fetchedMovies.then(fM => setMovieQueue(fM));
-  }, []);
 
-  const [state, setState] = useState({
+    return { movieIdList: movies, fetchedMovies: fetchedMovies };
+  }
+
+  const [, setState] = useState({
     swipedAllCards: false,
     swipeDirection: "",
   });
@@ -139,9 +95,10 @@ export default function SwipePremade({
           flex: 1,
           borderRadius: 10,
           justifyContent: "center",
+          alignItems: "center",
         }}>
         <ImageCard
-          style={{ height: "100%" }}
+          style={{ width: cardSize.width, height: cardSize.height }}
           source={TmdbService.getImageSource<ImagePosterSize>(
             movie?.poster_path,
             "w780"
@@ -159,38 +116,32 @@ export default function SwipePremade({
           key="noCross"
           size={(buttonBarHeight * 2) / 3}
           style={{ margin: 15 }}
-          icon={require("./../../assets/iconsPng/Icons/NoCross.png")}
+          icon={require("./../../../assets/iconsPng/Icons/NoCross.png")}
           onClick={swipeLeft}></IconButton>
         <IconButton
           key="star"
           size={buttonBarHeight / 2}
           iconFactor={0.5}
           iconStyle={{ marginBottom: 2 }}
-          icon={require("./../../assets/iconsPng/Icons/Star.png")}
+          icon={require("./../../../assets/iconsPng/Icons/Star.png")}
           onClick={swipeUp}></IconButton>
         <IconButton
           key="heart"
           size={(buttonBarHeight * 2) / 3}
           style={{ margin: 15 }}
-          iconFactor={0.45}
-          icon={require("./../../assets/iconsPng/Icons/Heart.png")}
-          iconStyle={{ marginTop: 3 }}
+          iconFactor={0.5}
+          icon={require("./../../../assets/iconsPng/Icons/Heart.png")}
+          iconStyle={{ marginTop: 4 }}
           onClick={swipeRight}></IconButton>
+        {/* <Image source={require("./../../../assets/iconsPng/Icons/Heart.png")}></Image> */}
       </>
     );
   };
 
   const onSwiped = type => {
-    console.log(`on swiped ${type}`);
-    console.log("CardIndex", cardIndex);
-
-    setCurrentMovie(movieQueue[cardIndex]);
-    setCurrentMovieId(movieIds[cardIndex + 1]);
     setCardIndex(cardIndex + 1);
-    // Returns first value
-    console.log(movieQueue);
-    console.log(currentMovie);
-    console.log("CardIndex", cardIndex);
+    // setTimeout(() => setCurrentMovie(movieQueue[cardIndex + 1]), 250);
+    setCurrentMovie(movieQueue[cardIndex + 1]);
   };
 
   const onSwipedAllCards = () => {
@@ -221,17 +172,8 @@ export default function SwipePremade({
     setTimeout(() => swiper.current?.swipeTop(), 500);
   };
 
-  const ButtonBar = (): JSX.Element => {
-    return (
-      <View style={[styles.buttonBar, { height: buttonBarHeight }]}>
-        {getIconButtons()}
-      </View>
-    );
-  };
-
   const ButtonBarWithLinearGradient = ({
     gradientBlur = 0.25,
-    ...props
   }: {
     gradientBlur?: number;
   }): JSX.Element => {
@@ -260,8 +202,6 @@ export default function SwipePremade({
 
   return (
     <>
-      <NavBar></NavBar>
-
       <View style={styles.container}>
         <ScrollView
           ref={scrollView}
@@ -273,22 +213,24 @@ export default function SwipePremade({
           snapToStart={true}
           snapToEnd={false}
           indicatorStyle={"white"}>
+          <NavBar></NavBar>
+
           <View
             style={{
-              height: WINDOW_HEIGHT,
-              // borderColor: "green",
-              // borderWidth: 3,
+              height: SCREEN_HEIGHT - globalVariables.navBarHeight * 1.5,
             }}>
-            <View style={styles.swipeContainer}>
+            <View style={[styles.swipeContainer]}>
               <Swiper
                 ref={swiper}
                 disableBottomSwipe
                 containerStyle={{
                   backgroundColor: globalVariables.darkBackgroundSwipeView,
                 }}
+                cardStyle={{ height: cardSize.height }}
                 onSwipedLeft={() => onSwiped("left")}
                 onSwipedRight={() => onSwiped("right")}
                 onSwipedTop={() => onSwiped("top")}
+                horizontalThreshold={SCREEN_WIDTH / 6}
                 // onSwipedBottom={() => this.onSwiped("bottom")}
                 onTapCard={() =>
                   scrollView.current.scrollTo({
@@ -335,7 +277,7 @@ export default function SwipePremade({
                             justifyContent: "center",
                             top: 0,
                           }}
-                          source={require("./../../assets/iconsPng/Icons/NOPETag.png")}></Image>
+                          source={require("./../../../assets/iconsPng/Icons/NOPETag.png")}></Image>
                       </>
                     ) /* Optional */,
                     title: "NOPE",
@@ -360,7 +302,7 @@ export default function SwipePremade({
                             justifyContent: "center",
                             top: 0,
                           }}
-                          source={require("./../../assets/iconsPng/Icons/LIKETag.png")}></Image>
+                          source={require("./../../../assets/iconsPng/Icons/LIKETag.png")}></Image>
                       </>
                     ) /* Optional */,
                     title: "LIKE",
@@ -384,7 +326,7 @@ export default function SwipePremade({
                             justifyContent: "center",
                             top: 0,
                           }}
-                          source={require("./../../assets/iconsPng/Icons/SUPERLIKETag.png")}></Image>
+                          source={require("./../../../assets/iconsPng/Icons/SUPERLIKETag.png")}></Image>
                       </>
                     ) /* Optional */,
                     title: "Super Like",
@@ -411,7 +353,7 @@ export default function SwipePremade({
               }
             }>
             <DetailView
-              movieId={currentMovieId}
+              movie={currentMovie}
               buttonBarHeight={buttonBarHeight}></DetailView>
           </View>
         </ScrollView>
@@ -431,13 +373,17 @@ const styles = StyleSheet.create({
     backgroundColor: globalVariables.darkBackgroundSwipeView,
     justifyContent: "space-between",
     flexDirection: "column",
+    height: SCREEN_HEIGHT,
+    width: SCREEN_WIDTH,
   },
   swipeContainer: {
     // height: "92%",
     position: "relative",
-    height: 900,
-    flex: 1,
-    marginTop: 20,
+    // height: "100%",
+    backgroundColor: "transparent",
+    transform: [{ translateY: -globalVariables.navBarHeight - 20 }],
+    flex: 1.25,
+    // marginTop: 20,
     // marginBottom: 10,
     zIndex: 100,
   },
@@ -463,12 +409,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignItems: "center",
     alignSelf: "center",
-  },
-  card: {
-    flex: 1,
-    borderRadius: 10,
-    justifyContent: "center",
-    backgroundColor: "white",
   },
   text: {
     textAlign: "center",

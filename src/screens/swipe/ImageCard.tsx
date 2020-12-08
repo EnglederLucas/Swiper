@@ -9,7 +9,8 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import { globalVariables } from "../GlobalStyles";
+import { globalVariables } from "../../GlobalStyles";
+import { scaleFontsize, SCREEN_WIDTH, WINDOW_HEIGHT } from "../../utils/Utils";
 
 interface ImageCardProps {
   source: ImageSourcePropType;
@@ -57,9 +58,28 @@ export default function ImageCard({
         )}
         <View style={styles.galleryControl}></View>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>{props.title}</Text>
-          {props.description && (
-            <Text style={styles.desc}>{props.description}</Text>
+          <Text
+            style={[
+              styles.title,
+              {
+                fontSize: scaleFontsize(props.title, 30, 15, 2),
+              },
+            ]}>
+            {props.title}
+          </Text>
+          {props.description ? (
+            <Text
+              style={[
+                styles.desc,
+                {
+                  fontSize: 18,
+                  // fontSize: scaleFontsize(props.description, 18, 25),
+                },
+              ]}>
+              {props.description}
+            </Text>
+          ) : (
+            <View></View>
           )}
         </View>
       </ImageBackground>
@@ -90,18 +110,19 @@ const styles = StyleSheet.create({
   title: {
     color: globalVariables.light,
     fontFamily: globalVariables.montserrat600SemiBold,
-    fontSize: 30,
+    maxWidth: "100%",
   },
   desc: {
     color: globalVariables.light,
     fontFamily: globalVariables.montserrat400Regular,
-    fontSize: 18,
+    maxWidth: "100%",
   },
   textContainer: {
     // height: 100,
     marginLeft: 15,
     marginBottom: 15,
     zIndex: 100,
+    width: "95%",
   },
   galleryControl: {},
   darkGradient: {

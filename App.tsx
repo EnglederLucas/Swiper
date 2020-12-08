@@ -1,19 +1,27 @@
-import React, { useState } from "react";
-import Login from "./src/login/Login";
+import React, { useEffect, useState } from "react";
+import Login from "./src/screens/login/Login";
 import { LoadAssets } from "./src/components";
-import Swipe from "./src/swipe/Swipe";
-import { createStackNavigator } from "@react-navigation/stack";
-import SwipePremade from "./src/swipe/SwipePremade";
-import DetailView from "./src/swipe/DetailView";
-import { ImageSourcePropType } from "react-native";
-import SignUp from "./src/login/SignUp";
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from "@react-navigation/stack";
+import SwipePremade from "./src/screens/swipe/SwipePremade";
+import { ImageSourcePropType, LogBox } from "react-native";
+import SignUp from "./src/screens/login/SignUp";
+import { firebase } from "./src/firebaseconfig";
+import SwipeCollections from "./src/screens/collections/SwipeCollections";
+import SettingsScreen from "./src/screens/settings/SettingsScreen";
+
+// LogBox.ignoreLogs(["Settin a timer"]);
+console.disableYellowBox = true;
 
 export type AuthenticationStackParameterList = {
-  Swipe: undefined;
+  Swipe: { collectionId: string };
   Login: undefined;
   SignUp: undefined;
+  Settings: undefined;
   Details: { image: ImageSourcePropType };
-  Collections: undefined;
+  SwipeCollections: undefined;
 };
 
 export const AuthenticationStack = createStackNavigator<
@@ -21,25 +29,37 @@ export const AuthenticationStack = createStackNavigator<
 >();
 
 const AuthenticationNavigator = () => {
-  const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(undefined);
 
   //TODO:Add Navbar
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) setUserId(user.uid);
+      else setUserId(null);
+    });
+  }, [userId]);
+
   return (
-    <AuthenticationStack.Navigator headerMode="none">
-      {user ? (
+    <AuthenticationStack.Navigator
+      headerMode="none"
+      screenOptions={{
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        gestureDirection: "horizontal-inverted",
+      }}>
+      {userId !== null ? (
         <>
           <AuthenticationStack.Screen
             name="Swipe"
-            component={SwipePremade}></AuthenticationStack.Screen>
-          <AuthenticationStack.Screen
-            name="Details"
-            component={DetailView}
+            component={SwipePremade}
             initialParams={{
-              image: {
-                uri:
-                  "https://image.tmdb.org/t/p/original/uTylq8v3lfMUHMt3n0Tb4bA9CtG.jpg",
-              },
+              collectionId: "4KyX5l9TDwWCPhRylr9k", //"defaultCollection",
             }}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
+            name="SwipeCollections"
+            component={SwipeCollections}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
+            name="Settings"
+            component={SettingsScreen}></AuthenticationStack.Screen>
         </>
       ) : (
         <>
@@ -56,6 +76,8 @@ const AuthenticationNavigator = () => {
 };
 
 export default function App(): JSX.Element {
+  // LogBox.ignoreLogs(["Setting a timer"]);
+
   return (
     <LoadAssets>
       <AuthenticationNavigator />
