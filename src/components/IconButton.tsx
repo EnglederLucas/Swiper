@@ -5,22 +5,16 @@ import {
   ViewStyle,
   ImageSourcePropType,
   ImageStyle,
-  ImageBackground,
+  Image,
 } from "react-native";
 import { globalVariables } from "../GlobalStyles";
-import { 
+import {
   useTapGestureHandler,
   withTransition,
   mix,
 } from "react-native-redash/lib/module/v1";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
-import Animated, {
-  call,
-  cond,
-  eq,
-  useCode,
-  Value,
-} from "react-native-reanimated";
+import Animated, { call, cond, eq, useCode } from "react-native-reanimated";
 
 interface IconButtonProps {
   size?: number;
@@ -36,6 +30,7 @@ const IconButton = ({
   size = 50,
   ...props
 }: IconButtonProps): JSX.Element => {
+  // const size = 50;
   const { gestureHandler, state } = useTapGestureHandler();
   useCode(
     () =>
@@ -46,8 +41,6 @@ const IconButton = ({
     [state]
   );
 
-  const active = new Value(-1);
-
   const progress = withTransition(eq(state, State.BEGAN));
   const scale = mix(progress, 1, 0.5);
 
@@ -56,7 +49,7 @@ const IconButton = ({
       width: size,
       height: size,
       borderRadius: size / 2,
-      backgroundColor: globalVariables.dark,
+      backgroundColor: globalVariables.darkBackground,
       borderWidth: 2,
       borderColor: "#222325",
       borderStyle: "solid",
@@ -66,7 +59,7 @@ const IconButton = ({
     image: {
       height: size * iconFactor,
       width: size * iconFactor,
-      resizeMode: "contain",
+      // resizeMode: "contain",
     },
   });
 

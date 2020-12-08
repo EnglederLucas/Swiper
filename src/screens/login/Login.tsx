@@ -1,53 +1,54 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { SwiperButton, SimpleTextInput } from "../components";
-import { globalVariables } from "../GlobalStyles";
-import { firebase } from "../firebaseconfig";
+import { SwiperButton, SimpleTextInput } from "../../components";
+import { globalVariables } from "../../GlobalStyles";
+import { firebase } from "../../firebaseconfig";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
 
-const SignUp = (): JSX.Element => {
+const Login = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigation = useNavigation();
 
   const elementWidth = 260;
   const elementHeight = 45;
 
-  const onSignUpPressed = () => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(response => {
-        const uid = response.user.uid;
-        const data = {
-          id: uid,
-          email,
-        };
-        const usersRef = firebase.firestore().collection("users");
-        usersRef
-          .doc(uid)
-          .set(data)
-          .then(() => {
-            navigation.navigate("Swipe");
-          })
-          .catch(error => {
-            alert(error);
-          });
-      })
-      .catch(error => {
-        alert(error);
-      });
+  const onLoginPressed = async () => {
+    try {
+      const res = await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password);
+      // const user = await getUser(res.user.uid);
+
+      navigation.navigate("Swipe");
+    } catch (err) {
+      console.log(err);
+      alert(err);
+    }
   };
+
+  async function getUser(
+    uid: string
+  ): Promise<firebase.firestore.DocumentData> {
+    const usersRef = firebase.firestore().collection("users");
+
+    const document = await usersRef.doc(uid).get();
+
+    if (!document.exists) {
+      throw "User already exists";
+    }
+
+    return document.data();
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
           style={styles.image}
-          source={require("../../assets/splash.png")}></Image>
+          source={require("../../../assets/splash.png")}></Image>
       </View>
       <View style={styles.form}>
         <SimpleTextInput
@@ -68,27 +69,17 @@ const SignUp = (): JSX.Element => {
           autoCompleteType="password"
           textContentType="password"
           secureTextEntry={true}></SimpleTextInput>
-
-        <SimpleTextInput
-          width={elementWidth}
-          height={elementHeight}
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={text => setConfirmPassword(text)}
-          autoCompleteType="password"
-          textContentType="password"
-          secureTextEntry={true}></SimpleTextInput>
       </View>
 
       <View style={styles.footer}>
         <SwiperButton
           width={elementWidth + 5}
           height={elementHeight + 5}
-          title="Sign Up"
-          onPress={() => onSignUpPressed()}></SwiperButton>
+          title="Login"
+          onPress={() => onLoginPressed()}></SwiperButton>
 
-        <Text style={styles.text} onPress={() => navigation.navigate("Login")}>
-          Already have an account? Sign in
+        <Text style={styles.text} onPress={() => navigation.navigate("SignUp")}>
+          Not a user yet? Create an account!
         </Text>
       </View>
     </View>
@@ -118,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    color: "#b2ebf2",
+    color: globalVariables.light,
     textDecorationLine: "underline",
     paddingTop: "3%",
     textAlign: "center",
@@ -130,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUp;
+export default Login;

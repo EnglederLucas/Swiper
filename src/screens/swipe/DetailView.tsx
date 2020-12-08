@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,67 +7,55 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import { SwiperButton } from "../components";
-import { AuthenticationStackParameterList } from "../../App";
-import { StackScreenProps } from "@react-navigation/stack";
-import { AppendType, TmdbService } from "../services/TmdbService";
+import { AppendType, TmdbService } from "../../services/TmdbService";
 import {
-  CastPerson,
-  CrewPerson,
-  ImageBackdropSize,
   ImagePosterSize,
   ImageProfileSize,
   MovieResponse,
-} from "../contracts/TmdbTypes";
+} from "../../contracts/TmdbTypes";
 // import Image from "react-native-scalable-image";
-import YoutubePlayer from "react-native-youtube-iframe";
-import * as WebView from "react-native-webview";
-import { SCREEN_WIDTH, WINDOW_WIDTH } from "../utils/Utils";
-import { getHexColorWithAlpha, globalVariables } from "../GlobalStyles";
+import YoutubePlayer, { YoutubeIframeRef } from "react-native-youtube-iframe";
+import { SCREEN_WIDTH } from "../../utils/Utils";
+import { getHexColorWithAlpha, globalVariables } from "../../GlobalStyles";
 import { ScrollView } from "react-native-gesture-handler";
+import * as Animatable from "react-native-animatable";
 
 interface DetailViewProps {
   // movie?: MovieResponse & AppendType;
   buttonBarHeight?: number;
-  movieId: number;
+  movie: (MovieResponse & AppendType) | null | undefined;
 }
 
-type NavigationProps = StackScreenProps<
-  AuthenticationStackParameterList,
-  "Details"
->;
-
-const TEXT_MARGIN_LEFT = 15;
-
-const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
+const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
   const [playing, setPlaying] = useState(false);
 
-  const [movie, setMovie] = useState<(MovieResponse & AppendType) | null>(null);
+  const youtubePlayerRef = useRef<YoutubeIframeRef>(null);
+
+  const animatables = {
+    generalInfo: useRef<Animatable.View & View>(null),
+    cast: useRef<Animatable.View & View>(null),
+    crew: useRef<Animatable.View & View>(null),
+    rest: useRef<Animatable.View & View>(null),
+  };
+
+  // const [movie, setMovie] = useState<(MovieResponse & AppendType) | null>(null);
 
   useEffect(() => {
-    const service = TmdbService.getInstance();
-
-    console.log(movieId);
-    if (movieId === undefined) return;
-
-    service
-      .fetchMovieWithAppend(movieId, "videos", "credits")
-      .then(movie => setMovie(movie))
-      .then(movie => console.log(movie));
-
-    return () => {
-      setMovie(null);
-    };
-  }, [movieId]);
+    // console.log(movie);
+    // for (const key in animatables) {
+    //   if (Object.prototype.hasOwnProperty.call(animatables, key)) {
+    //     const element: React.MutableRefObject<Animatable.View & View> =
+    //       animatables[key];
+    //     // console.log("Current", element.current);
+    //     element?.current?.slideInUp(2000);
+    //   }
+    // }
+  }, [movie]);
 
   const onStateChange = useCallback(state => {
     if (state === "ended") {
       setPlaying(false);
     }
-  }, []);
-
-  const togglePlaying = useCallback(() => {
-    setPlaying(prev => !prev);
   }, []);
 
   const Description = (props: {
@@ -92,24 +80,6 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
         }}>
         {movie?.overview}
       </Text>
-    </View>
-  );
-
-  const BackdropImage = (): JSX.Element => (
-    <View style={styles.backdrop_image}>
-      <Image
-        // width={Dimensions.get("window").width}
-        // height={(Dimensions.get("window").width * 16) / 9}
-        style={{
-          resizeMode: "contain",
-          width: WINDOW_WIDTH,
-          height: TmdbService.getBackdropDimensions({ width: WINDOW_WIDTH })
-            .height,
-        }}
-        source={TmdbService.getImageSource<ImageBackdropSize>(
-          movie?.backdrop_path,
-          "w1280"
-        )}></Image>
     </View>
   );
 
@@ -156,7 +126,7 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
         },
         props.containerStyle,
       ]}>
-      {props.profile_path && (
+      {props.profile_path ? (
         <Image
           style={{
             width: imageSize,
@@ -168,8 +138,10 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
             props.profile_path,
             "w185"
           )}></Image>
+      ) : (
+        <></>
       )}
-      {!props.profile_path && (
+      {!props.profile_path ? (
         <View
           style={{
             width: imageSize,
@@ -191,6 +163,8 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
               .join("")}
           </Text>
         </View>
+      ) : (
+        <></>
       )}
       <View
         style={{
@@ -236,7 +210,10 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
     border?: "bottom" | "top" | "none";
     containerStyle?: StyleProp<ViewStyle>;
   }): JSX.Element => (
-    <View
+    <Animatable.View
+      ref={animatables.cast}
+      animation={"slideInUp"}
+      duration={1000}
       style={[
         {
           position: "relative",
@@ -252,11 +229,13 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
           borderTopColor: getHexColorWithAlpha(globalVariables.light, 20),
           borderWidth,
         },
-        border === "top" && {
-          // paddingTop: 10,
-          borderTopColor: getHexColorWithAlpha(globalVariables.light, 100),
-          borderWidth,
-        },
+        border === "top"
+          ? {
+              // paddingTop: 10,
+              borderTopColor: getHexColorWithAlpha(globalVariables.light, 100),
+              borderWidth,
+            }
+          : {},
         props.containerStyle,
       ]}>
       <View style={{ position: "absolute", left: 0, top: 0 }}>
@@ -265,7 +244,7 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
             fontSize: 18,
             fontFamily: globalVariables.montserrat400Regular,
             color: getHexColorWithAlpha(globalVariables.light, 20),
-            marginLeft: TEXT_MARGIN_LEFT,
+            marginLeft: globalVariables.textMarginLeft,
           }}>
           {props.title}
         </Text>
@@ -282,7 +261,7 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
           {props.children}
         </ScrollView>
       </View>
-    </View>
+    </Animatable.View>
   );
 
   const GeneralInfo = ({
@@ -301,7 +280,11 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
     alignMode?: "left" | "center";
     style?: StyleProp<ViewStyle>;
   }): JSX.Element => (
-    <View style={[props.style]}>
+    <Animatable.View
+      style={[props.style]}
+      ref={animatables.generalInfo}
+      animation={"slideInUp"}
+      duration={1000}>
       <View style={[styles.info_wrapper, { height: height, borderRadius: 2 }]}>
         <View
           style={[
@@ -340,10 +323,9 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
                 color: globalVariables.light,
                 fontFamily: globalVariables.montserrat500Medium,
               }}>
-              {
+              {movie?.credits?.crew?.find(c => c.job == "Director")?.name ??
                 movie?.credits?.crew?.find(c => c.job.includes("Director"))
-                  ?.name
-              }
+                  ?.name}
             </Text>
           </View>
 
@@ -355,7 +337,7 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
                 color: globalVariables.light,
                 fontFamily: globalVariables.montserrat200ExtraLight,
               }}>
-              {new Date(movie?.release_date).getFullYear().toString()}
+              {new Date(movie?.release_date)?.getFullYear()?.toString()}
             </Text>
             <Text
               style={{
@@ -364,7 +346,7 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
                 fontFamily: globalVariables.montserrat200ExtraLight,
                 marginRight: 10,
               }}>
-              {`${movie?.runtime.toString()}m`}
+              {`${movie?.runtime?.toString()}m`}
             </Text>
           </View>
         </View>
@@ -392,77 +374,80 @@ const DetailView = ({ movieId, ...props }: DetailViewProps): JSX.Element => {
       {includeDescription && (
         <Description
           alignMode={alignMode}
-          marginLeft={TEXT_MARGIN_LEFT}></Description>
+          marginLeft={globalVariables.textMarginLeft}></Description>
       )}
-    </View>
+    </Animatable.View>
   );
 
   return (
-    <View
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 40, //To correct the inconsisten screenHeight shit
-      }}>
-      <GeneralInfo
-        height={200}
-        alignMode={"left"}
-        includeDescription={true}></GeneralInfo>
-      <Line color={globalVariables.grey} borderWidth={2}></Line>
-      <PersonList
-        title={"Cast"}
-        containerStyle={{ marginTop: 15 }}
-        border={"none"}>
-        <>
-          {movie?.credits?.cast.slice(0, 15).map(c => (
-            <PersonCard
-              name={c.name}
-              role={c.character}
-              profile_path={c.profile_path}
-              key={c.credit_id}
-              size={70}
-              marginTopBottom={15}
-              marginLeft={5}
-              borderRadius={10}></PersonCard>
-          ))}
-        </>
-      </PersonList>
+    <>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 40, //To correct the inconsisten screenHeight shit
+        }}>
+        <GeneralInfo
+          height={200}
+          alignMode={"left"}
+          includeDescription={true}></GeneralInfo>
+        <Line color={globalVariables.grey} borderWidth={2}></Line>
+        <PersonList
+          title={"Cast"}
+          containerStyle={{ marginTop: 15 }}
+          border={"none"}>
+          <>
+            {movie?.credits?.cast.slice(0, 15).map(c => (
+              <PersonCard
+                name={c.name}
+                role={c.character}
+                profile_path={c.profile_path}
+                key={c.credit_id}
+                size={70}
+                marginTopBottom={15}
+                marginLeft={5}
+                borderRadius={10}></PersonCard>
+            ))}
+          </>
+        </PersonList>
 
-      <PersonList title={"Crew"} border={"none"} height={220}>
-        <>
-          {TmdbService.getOrderedCrewWithGroupedJobs(
-            movie?.credits?.crew,
-            15
-          ).map(c => (
-            <PersonCard
-              name={c.name}
-              role={c.job}
-              profile_path={c.profile_path}
-              key={c.credit_id}
-              size={70}
-              marginTopBottom={15}
-              marginLeft={5}
-              borderRadius={10}></PersonCard>
-          ))}
-        </>
-      </PersonList>
+        <PersonList title={"Crew"} border={"none"} height={220}>
+          <>
+            {TmdbService.getOrderedCrewWithGroupedJobs(
+              movie?.credits?.crew,
+              15
+            ).map(c => (
+              <PersonCard
+                name={c.name}
+                role={c.job}
+                profile_path={c.profile_path}
+                key={c.credit_id}
+                size={70}
+                marginTopBottom={15}
+                marginLeft={5}
+                borderRadius={10}></PersonCard>
+            ))}
+          </>
+        </PersonList>
 
-      {/* <BackdropImage></BackdropImage> */}
-      <View>
-        <YoutubePlayer
-          initialPlayerParams={{}}
-          webViewStyle={{}}
-          height={250}
-          width={400}
-          play={playing}
-          videoId={TmdbService.extractYoutubeTrailerKey(movie)}
-          onChangeState={onStateChange}
-        />
+        {/* <BackdropImage></BackdropImage> */}
+        <View>
+          <YoutubePlayer
+            ref={youtubePlayerRef}
+            initialPlayerParams={{}}
+            webViewStyle={{}}
+            height={250}
+            width={400}
+            play={playing}
+            videoId={TmdbService.extractYoutubeTrailerKey(movie)}
+            onChangeState={onStateChange}
+          />
+        </View>
+        <View style={{ height: props.buttonBarHeight ?? 80 }}></View>
       </View>
-      <View style={{ height: props.buttonBarHeight ?? 80 }}></View>
-    </View>
+    </>
   );
 };
 
@@ -473,6 +458,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
     // flexShrink: 2,
   },
   infos: {
@@ -480,7 +466,7 @@ const styles = StyleSheet.create({
     height: "100%",
     flexDirection: "column",
     justifyContent: "space-between",
-    marginLeft: TEXT_MARGIN_LEFT,
+    marginLeft: globalVariables.textMarginLeft,
   },
   poster_container: {
     flex: 1,

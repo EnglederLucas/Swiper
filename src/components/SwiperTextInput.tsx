@@ -25,7 +25,7 @@ export default function SwiperTextInput({
   borderRadius = 50,
   borderWidth = 10,
   ...props
-}: SwiperTextInput & TextInputProps) {
+}: SwiperTextInput & TextInputProps): JSX.Element {
   const [isFocused, setIsFocused] = useState(false);
 
   const baseStyle: StyleProp<TextStyle> = {
@@ -72,8 +72,7 @@ export default function SwiperTextInput({
         isFocused
           ? [globalVariables.primaryOne, globalVariables.primaryTwo]
           : [globalVariables.light, globalVariables.light]
-      }
-    >
+      }>
       <TextInput
         style={{ ...baseStyle, ...inputStyle }}
         placeholderTextColor={isFocused ? globalVariables.primaryOne : "#fff"}

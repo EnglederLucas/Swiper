@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text, ImageSourcePropType } from "react-native";
-import IconButton from "../components/IconButton";
-import { globalVariables } from "../GlobalStyles";
+import IconButton from "../../components/IconButton";
+import { globalVariables } from "../../GlobalStyles";
 import ImageCard from "./ImageCard";
 import Swiper from "react-native-deck-swiper";
 // import { Interactable } from "react-native-redash/lib/module/v1"
@@ -45,17 +45,17 @@ export default function Swipe(): JSX.Element {
         <IconButton
           size={60}
           style={{ margin: 15 }}
-          icon={require("./../assets/iconsPng/Icons/NoCross.png")}></IconButton>
+          icon={require("./../../assets/iconsPng/Icons/NoCross.png")}></IconButton>
         <IconButton
           size={45}
           iconFactor={0.5}
           iconStyle={{ marginBottom: 2 }}
-          icon={require("./../assets/iconsPng/Icons/Star.png")}></IconButton>
+          icon={require("./../../assets/iconsPng/Icons/Star.png")}></IconButton>
         <IconButton
           size={60}
           style={{ margin: 15 }}
           iconFactor={0.45}
-          icon={require("./../assets/iconsPng/Icons/Heart.png")}
+          icon={require("./../../assets/iconsPng/Icons/Heart.png")}
           iconStyle={{ marginTop: 3 }}></IconButton>
       </View>
     </View>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageCard: {
-    // width: "90%",
+    width: "90%",
     // height: "80%",
 
     flex: 1,

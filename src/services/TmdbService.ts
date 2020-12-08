@@ -1,5 +1,8 @@
-import { CrewDepartment, CrewPerson } from "./../contracts/TmdbTypes";
-import { nameof } from "./../utils/Utils";
+import {
+  CrewDepartment,
+  CrewPerson,
+  MovieList,
+} from "./../contracts/TmdbTypes";
 import {
   ImagesResponse,
   SimilarResponse,
@@ -7,11 +10,6 @@ import {
   AlternativeTitlesResponse,
   ReviewResult,
   ImageSize,
-  ImageBackdropSize,
-  ImagePosterSize,
-  ImageProfileSize,
-  ImageLogoSize,
-  ImageStillSize,
 } from "../contracts/TmdbTypes";
 import {
   MovieResponse,
@@ -66,7 +64,7 @@ export class TmdbService {
 
     this.axiosInstance.interceptors.response.use(
       response => {
-        console.log(response.status + " " + response.statusText);
+        // console.debug(response.status + " " + response.statusText);
         return response;
       },
       (error: AxiosError) => {
@@ -155,7 +153,8 @@ export class TmdbService {
   public static extractYoutubeTrailerKey(
     movie: MovieResponse & { videos: VideosResponse }
   ): string | null {
-    if (movie?.videos.results?.length === 0) return null;
+    if (!movie) return null;
+    if (movie?.videos?.results?.length === 0) return null;
 
     const firstResult = movie?.videos.results[0];
     if (!firstResult || firstResult?.site !== "YouTube") {
@@ -234,6 +233,23 @@ export class TmdbService {
     });
 
     return crew.splice(0, length);
+  }
+
+  async getIdsOfMovieList(movieListId: number): Promise<number[]> {
+    if (!movieListId) return [];
+
+    const movieList = (
+      await this.axiosInstance.get<MovieList>(`/list/${movieListId}`)
+    ).data;
+
+    return movieList.items.map(i => i.id);
+  }
+
+  async getMovieList(movieListId: number): Promise<MovieList> {
+    if (!movieListId) return null;
+
+    return (await this.axiosInstance.get<MovieList>(`/list/${movieListId}`))
+      .data;
   }
 
   public setNewApikey(newApiKey: string): void {
