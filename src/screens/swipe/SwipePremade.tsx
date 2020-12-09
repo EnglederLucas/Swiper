@@ -40,7 +40,7 @@ export default function SwipePremade({
   const [, setMovieIds] = useState([]);
 
   const [currentMovie, setCurrentMovie] = useState<
-    MovieResponse & AppendType
+    (MovieResponse & AppendType) | null
   >();
 
   useEffect(() => {
@@ -59,6 +59,8 @@ export default function SwipePremade({
     console.log("My Collection Id", collectionId);
 
     return () => {
+      setCardIndex(0);
+      setCurrentMovie(null);
       isMounted = false;
     };
   }, [collectionId]);
