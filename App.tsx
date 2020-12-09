@@ -13,7 +13,7 @@ import SwipeCollections from "./src/screens/collections/SwipeCollections";
 import SettingsScreen from "./src/screens/settings/SettingsScreen";
 
 // LogBox.ignoreLogs(["Settin a timer"]);
-console.disableYellowBox = true;
+// console.disableYellowBox = true;
 
 export type AuthenticationStackParameterList = {
   Swipe: { collectionId: string };
@@ -76,7 +76,7 @@ const AuthenticationNavigator = () => {
 };
 
 export default function App(): JSX.Element {
-  // LogBox.ignoreLogs(["Setting a timer"]);
+  LogBox.ignoreLogs(["Setting a timer"]);
 
   return (
     <LoadAssets>

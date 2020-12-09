@@ -1,7 +1,7 @@
-import * as firebase from "firebase/app";
-import * as fireAuth from "firebase/auth";
-import * as firestore from "firebase/firestore";
-import * as fireFunctions from "firebase/functions";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
+import "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAQ-HG43-V1tAOCjTW3iPe69MJ1imbkmXM ",
@@ -20,6 +20,7 @@ if (!firebase.apps.length) {
 
 export { firebase };
 
-export { fireAuth };
+const { auth, firestore, functions } = firebase;
+export { auth };
 export { firestore };
-export { fireFunctions };
+export { functions };

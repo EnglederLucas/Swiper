@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SwiperButton, SimpleTextInput } from "../../components";
 import { globalVariables } from "../../GlobalStyles";
-import { firebase } from "../../firebaseconfig";
+import { firebase, firestore, auth } from "../../firebaseconfig";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
 
@@ -32,7 +32,7 @@ const Login = (): JSX.Element => {
   async function getUser(
     uid: string
   ): Promise<firebase.firestore.DocumentData> {
-    const usersRef = firebase.firestore().collection("users");
+    const usersRef = firestore().collection("users");
 
     const document = await usersRef.doc(uid).get();
 

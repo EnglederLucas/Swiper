@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  ViewStyle,
+  StyleProp,
+} from "react-native";
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import NavBar from "../../components/NavBar";
 import { getHexColorWithAlpha, globalVariables } from "../../GlobalStyles";
@@ -14,12 +22,14 @@ import BottomSheet from "reanimated-bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
 import { SwiperButton } from "../../components";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
+import { SwiperButtonWithIcon } from "../../components/SwiperButton";
 
 interface CollectionCardProps {
   collection: SwipeCollection;
   slideUpDelay?: number;
   gap?: number;
   height?: number;
+  style?: StyleProp<ViewStyle>;
 }
 
 export type SwipeCollectionProps = StackScreenProps<
@@ -33,6 +43,11 @@ export default function SwipeCollections({
   const [collections, setCollections] = useState<SwipeCollection[]>([]);
   const firestoreService = FirestoreService.getInstance();
 
+  const sheetRef = React.useRef<BottomSheet>(null);
+
+  const BOTTOM_SHEET_HEIGHTS = [0, 300, 450];
+  const BOTTOM_SHEET_HEADER = 50;
+
   const [selectedCollection, setSelectedCollection] = useState<
     SwipeCollection | undefined | null
   >(undefined);
@@ -42,12 +57,30 @@ export default function SwipeCollections({
       style={{
         backgroundColor: globalVariables.dark,
         padding: 16,
-        height: 400,
+        height: BOTTOM_SHEET_HEIGHTS[1] - BOTTOM_SHEET_HEADER,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
       }}>
-      <View style={{ alignSelf: "flex-end" }}>
+      <View
+        style={{
+          alignSelf: "flex-end",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+        }}>
+        <SwiperButton
+          // icon={require("../../../assets/iconsPng/feather-icon/plus.png")}
+          title="Share"
+          style={{ marginRight: 20 }}
+          onPress={() => console.log("Share")}
+          width={SCREEN_WIDTH / 2.5}
+          gradientProps={{
+            colors: [globalVariables.primaryTwo, globalVariables.primaryOne],
+          }}
+          height={50}></SwiperButton>
         <SwiperButton
           title="Swipe"
           onPress={() =>
@@ -55,7 +88,10 @@ export default function SwipeCollections({
               collectionId: selectedCollection.id,
             })
           }
-          width={SCREEN_WIDTH / 3}
+          gradientProps={{
+            colors: [globalVariables.primaryOne, globalVariables.primaryTwo],
+          }}
+          width={SCREEN_WIDTH / 2.5}
           height={50}></SwiperButton>
       </View>
     </View>
@@ -84,8 +120,6 @@ export default function SwipeCollections({
     );
   };
 
-  const sheetRef = React.useRef(null);
-
   useEffect(() => {
     let isMounted = true; // note this flag denote mount status
     console.log("Fetching Collections");
@@ -104,6 +138,7 @@ export default function SwipeCollections({
     slideUpDelay = 1000,
     gap = 20,
     height = 100,
+    ...props
   }: CollectionCardProps): JSX.Element {
     return (
       <TouchableHighlight
@@ -112,13 +147,16 @@ export default function SwipeCollections({
           sheetRef.current.snapTo(300);
         }}
         underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
-        containerStyle={{
-          width: "90%",
-          height: height,
-          borderRadius: 20,
-          overflow: "hidden",
-          marginBottom: gap,
-        }}
+        containerStyle={[
+          {
+            width: "90%",
+            height: height,
+            borderRadius: 20,
+            overflow: "hidden",
+            // marginBottom: gap,
+          },
+          props.style,
+        ]}
         style={{
           borderRadius: 20,
         }}>
@@ -168,6 +206,7 @@ export default function SwipeCollections({
           height: height,
           borderRadius: 20,
           overflow: "hidden",
+          marginTop: gap,
           marginBottom: gap,
         }}
         style={{
@@ -215,7 +254,30 @@ export default function SwipeCollections({
             }}>
             Collections
           </Text>
-          <ScrollView style={styles.scrollContainer}>
+          <View>
+            <CreateNewCollectionButton
+              onPress={() => createNewCollection()}
+              key="createNewCollection"></CreateNewCollectionButton>
+            <FlatList
+              // contentContainerStyle={{ marginTop: 20 }}
+              ItemSeparatorComponent={() => (
+                <View
+                  style={{
+                    height: 20,
+                    backgroundColor: globalVariables.darkBackgroundSwipeView,
+                  }}
+                />
+              )}
+              data={collections}
+              renderItem={d => (
+                <CollectionCard
+                  collection={d.item}
+                  slideUpDelay={d.index * 200}></CollectionCard>
+              )}
+              keyExtractor={item => item.id}
+            />
+          </View>
+          {/* <ScrollView style={styles.scrollContainer}>
             <CreateNewCollectionButton
               onPress={() => createNewCollection()}
               key="createNewCollection"></CreateNewCollectionButton>
@@ -225,12 +287,12 @@ export default function SwipeCollections({
                 collection={c}
                 slideUpDelay={i * 200}></CollectionCard>
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
       </View>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={[0, 300, 450]}
+        snapPoints={BOTTOM_SHEET_HEIGHTS}
         renderContent={renderContent}
         renderHeader={renderHeader}
       />

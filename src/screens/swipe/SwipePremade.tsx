@@ -37,7 +37,7 @@ export default function SwipePremade({
     []
   );
 
-  const [, setMovieIds] = useState([]);
+  const [movieIds, setMovieIds] = useState([]);
 
   const [currentMovie, setCurrentMovie] = useState<
     (MovieResponse & AppendType) | null
@@ -50,7 +50,6 @@ export default function SwipePremade({
 
     init().then(res => {
       if (isMounted) {
-        // console.log(res.movieIdList);
         setMovieIds(res.movieIdList);
         setMovieQueue(res.fetchedMovies);
         setCurrentMovie(res.fetchedMovies[cardIndex]);
@@ -59,8 +58,9 @@ export default function SwipePremade({
     console.log("My Collection Id", collectionId);
 
     return () => {
-      setCardIndex(0);
-      setCurrentMovie(null);
+      // swiper?.current.forceUpdate();
+      // setCardIndex(0);
+      // setCurrentMovie(null);
       isMounted = false;
     };
   }, [collectionId]);
@@ -144,6 +144,8 @@ export default function SwipePremade({
     setCardIndex(cardIndex + 1);
     // setTimeout(() => setCurrentMovie(movieQueue[cardIndex + 1]), 250);
     setCurrentMovie(movieQueue[cardIndex + 1]);
+
+    console.log("movieIdList", movieIds.splice(0, 10), "cardIndex", cardIndex);
   };
 
   const onSwipedAllCards = () => {

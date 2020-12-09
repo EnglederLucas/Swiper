@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { auth } from "firebase";
+import { auth } from "./../../firebaseconfig";
 import React from "react";
 import { View, Text } from "react-native";
 import {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SwiperButton, SimpleTextInput } from "../../components";
 import { globalVariables } from "../../GlobalStyles";
-import { firebase } from "../../firebaseconfig";
+import { auth } from "../../firebaseconfig";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
 
@@ -18,7 +18,7 @@ const SignUp = (): JSX.Element => {
 
   const onSignUpPressed = async () => {
     try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      await auth().createUserWithEmailAndPassword(email, password);
 
       navigation.navigate("Swipe");
     } catch (err) {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    color: "#b2ebf2",
+    // color: "#b2ebf2",
     textDecorationLine: "underline",
     paddingTop: "3%",
     textAlign: "center",

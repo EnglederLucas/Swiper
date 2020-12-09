@@ -3,19 +3,19 @@ import {
   SwipeCollection,
   SwipeCollectionCreationDto,
 } from "./../contracts/Collection";
-import { firestore, auth } from "firebase";
+import { firestore, auth } from "./../firebaseconfig";
 
 type FirestoreCollection = firebase.firestore.CollectionReference<
   firebase.firestore.DocumentData
 >;
 
-const swipeCollectionConverter: firestore.FirestoreDataConverter<SwipeCollection> = {
+const swipeCollectionConverter: firebase.firestore.FirestoreDataConverter<SwipeCollection> = {
   toFirestore(coll: SwipeCollection): firebase.firestore.DocumentData {
     return { ...coll };
   },
   fromFirestore(
-    snapshot: firestore.QueryDocumentSnapshot,
-    options: firestore.SnapshotOptions
+    snapshot: firebase.firestore.QueryDocumentSnapshot,
+    options: firebase.firestore.SnapshotOptions
   ): SwipeCollection {
     const data = snapshot?.data(options);
     if (!data) return null;
