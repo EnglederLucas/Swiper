@@ -93,6 +93,7 @@ export class FirestoreService {
     member: SwipeCollection[];
   }> {
     const uid = auth()?.currentUser?.uid;
+    console.log(uid);
 
     if (!uid) return null;
 
@@ -120,6 +121,7 @@ export class FirestoreService {
     newCollection: SwipeCollectionCreationDto
   ): Promise<SwipeCollection> {
     const uid = auth()?.currentUser?.uid;
+    console.log(uid);
     if (!uid) return null;
 
     const swipeCollection: SwipeCollection = {

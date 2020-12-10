@@ -11,8 +11,12 @@ import SignUp from "./src/screens/login/SignUp";
 import { firebase } from "./src/firebaseconfig";
 import SwipeCollections from "./src/screens/collections/SwipeCollections";
 import SettingsScreen from "./src/screens/settings/SettingsScreen";
+import {
+  GestureDirection,
+  StackCardStyleInterpolator,
+} from "@react-navigation/stack/lib/typescript/src/types";
 
-// LogBox.ignoreLogs(["Settin a timer"]);
+LogBox.ignoreLogs(["Setting a timer"]);
 // console.disableYellowBox = true;
 
 export type AuthenticationStackParameterList = {
@@ -29,7 +33,7 @@ export const AuthenticationStack = createStackNavigator<
 >();
 
 const AuthenticationNavigator = () => {
-  const [userId, setUserId] = useState(undefined);
+  const [userId, setUserId] = useState("");
 
   //TODO:Add Navbar
   useEffect(() => {
@@ -39,27 +43,33 @@ const AuthenticationNavigator = () => {
     });
   }, [userId]);
 
+  const rightToLeftAnimation = {
+    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+    gestureDirection: "horizontal-inverted" as GestureDirection,
+  };
+  const leftToRightAnimation = {
+    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+    gestureDirection: "horizontal" as GestureDirection,
+  };
+
   return (
-    <AuthenticationStack.Navigator
-      headerMode="none"
-      screenOptions={{
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        gestureDirection: "horizontal-inverted",
-      }}>
-      {userId !== null ? (
+    <AuthenticationStack.Navigator headerMode="none">
+      {userId !== null && userId !== undefined ? (
         <>
           <AuthenticationStack.Screen
             name="Swipe"
             component={SwipePremade}
             initialParams={{
-              collectionId: "4KyX5l9TDwWCPhRylr9k", //"defaultCollection",
+              collectionId: "", //"defaultCollection",
             }}></AuthenticationStack.Screen>
           <AuthenticationStack.Screen
             name="SwipeCollections"
-            component={SwipeCollections}></AuthenticationStack.Screen>
+            component={SwipeCollections}
+            options={rightToLeftAnimation}></AuthenticationStack.Screen>
           <AuthenticationStack.Screen
             name="Settings"
-            component={SettingsScreen}></AuthenticationStack.Screen>
+            component={SettingsScreen}
+            options={leftToRightAnimation}></AuthenticationStack.Screen>
         </>
       ) : (
         <>
@@ -76,8 +86,6 @@ const AuthenticationNavigator = () => {
 };
 
 export default function App(): JSX.Element {
-  LogBox.ignoreLogs(["Setting a timer"]);
-
   return (
     <LoadAssets>
       <AuthenticationNavigator />

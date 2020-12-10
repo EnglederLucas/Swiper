@@ -3,7 +3,6 @@ import React from "react";
 import {
   ButtonProps,
   Text,
-  TouchableWithoutFeedback,
   Button,
   ViewStyle,
   StyleProp,
@@ -13,7 +12,11 @@ import {
   ImageSourcePropType,
   ImageStyle,
 } from "react-native";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import {
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import { globalVariables } from "../GlobalStyles";
 
 interface SwiperButtonProps {
@@ -33,9 +36,10 @@ export default function SwiperButton({
 }: SwiperButtonProps): JSX.Element {
   return (
     <View style={props.style}>
-      <TouchableHighlight
+      <TouchableOpacity
+        activeOpacity={0.9}
         style={{ borderRadius: 50, overflow: "hidden" }}
-        onPress={props.onPress}>
+        onPress={() => props.onPress()}>
         <LinearGradient
           start={{ x: 0.0, y: 0.5 }}
           end={{ x: 1.0, y: 0.5 }}
@@ -53,7 +57,7 @@ export default function SwiperButton({
             {title.toUpperCase()}
           </Text>
         </LinearGradient>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -69,7 +73,7 @@ export function SwiperButtonWithIcon({
 }): JSX.Element {
   return (
     <View style={props.style}>
-      <TouchableHighlight
+      <TouchableOpacity
         style={{ borderRadius: 50, overflow: "hidden" }}
         onPress={props.onPress}>
         <LinearGradient
@@ -100,7 +104,7 @@ export function SwiperButtonWithIcon({
             source={props.icon}
             style={[{ marginLeft: width / 10 }, props.imageStyle]}></Image>
         </LinearGradient>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 }

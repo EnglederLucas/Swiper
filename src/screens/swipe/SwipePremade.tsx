@@ -1,8 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import Swiper from "react-native-deck-swiper";
-import { StyleSheet, View, ScrollView, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Image,
+  Dimensions,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 import ImageCard from "./ImageCard";
-import { globalVariables, getHexColorWithAlpha } from "../../GlobalStyles";
+import {
+  globalVariables,
+  getHexColorWithAlpha,
+  getDefaultTextStyle,
+} from "../../GlobalStyles";
 import IconButton from "../../components/IconButton";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -14,6 +26,7 @@ import { AppendType, TmdbService } from "../../services/TmdbService";
 import { ImagePosterSize, MovieResponse } from "../../contracts/TmdbTypes";
 import NavBar from "../../components/NavBar";
 import { FirestoreService } from "../../services/FirestoreService";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 export type SwipeNavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
@@ -21,6 +34,7 @@ export type SwipeNavigationProps = StackScreenProps<
 >;
 
 export default function SwipePremade({
+  navigation,
   route: {
     params: { collectionId },
   },
@@ -32,6 +46,8 @@ export default function SwipePremade({
 
   const swiper = useRef<Swiper<unknown>>(null);
   const scrollView = useRef<ScrollView>(null);
+
+  const [loadingMovies, setLoadingMovies] = useState(false);
 
   const [movieQueue, setMovieQueue] = useState<(MovieResponse & AppendType)[]>(
     []
@@ -46,7 +62,13 @@ export default function SwipePremade({
   useEffect(() => {
     let isMounted = true; // note this flag denote mount status
     console.log("Fetching Collections");
+
+    if (!collectionId) return;
+
     console.log("CollectionId", collectionId);
+
+    console.log(loadingMovies);
+    console.log(movieQueue);
 
     init().then(res => {
       if (isMounted) {
@@ -69,6 +91,7 @@ export default function SwipePremade({
     movieIdList: number[];
     fetchedMovies: (MovieResponse & AppendType)[];
   }> {
+    setLoadingMovies(true);
     const service = TmdbService.getInstance();
     const firestore = FirestoreService.getInstance();
 
@@ -80,6 +103,7 @@ export default function SwipePremade({
       )
     );
 
+    setLoadingMovies(false);
     return { movieIdList: movies, fetchedMovies: fetchedMovies };
   }
 
@@ -156,24 +180,24 @@ export default function SwipePremade({
   };
 
   function resetView(): void {
-    scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
+    scrollView?.current?.scrollTo({ x: 0, y: 0, animated: true });
   }
 
   const swipeLeft = () => {
     resetView();
-    setTimeout(() => swiper.current?.swipeLeft(), 500);
+    setTimeout(() => swiper?.current?.swipeLeft(), 500);
   };
 
   const swipeRight = () => {
     // swiper.current?.swipeRight();
     resetView();
-    setTimeout(() => swiper.current?.swipeRight(), 500);
+    setTimeout(() => swiper?.current?.swipeRight(), 500);
   };
 
   const swipeUp = (): void => {
     // swiper.current?.swipeTop();
     resetView();
-    setTimeout(() => swiper.current?.swipeTop(), 500);
+    setTimeout(() => swiper?.current?.swipeTop(), 500);
   };
 
   const ButtonBarWithLinearGradient = ({
@@ -207,6 +231,33 @@ export default function SwipePremade({
   return (
     <>
       <View style={styles.container}>
+        {loadingMovies && (
+          <View key="spinner" style={styles.spinnerOverlay}>
+            <ActivityIndicator
+              style={styles.centerItem}
+              size={50}
+              color={globalVariables.primaryOne}
+            />
+          </View>
+        )}
+        {!collectionId && (
+          <TouchableWithoutFeedback
+            key="spinner"
+            containerStyle={styles.spinnerOverlay}
+            onPress={() => navigation.navigate("SwipeCollections")}>
+            <Text
+              style={[
+                getDefaultTextStyle(20, 500),
+                {
+                  width: SCREEN_WIDTH / 2,
+                  textAlign: "center",
+                },
+                styles.centerItem,
+              ]}>
+              Select a collection to start Swiping!
+            </Text>
+          </TouchableWithoutFeedback>
+        )}
         <ScrollView
           ref={scrollView}
           style={styles.scrollContainer}
@@ -237,7 +288,7 @@ export default function SwipePremade({
                 horizontalThreshold={SCREEN_WIDTH / 6}
                 // onSwipedBottom={() => this.onSwiped("bottom")}
                 onTapCard={() =>
-                  scrollView.current.scrollTo({
+                  scrollView?.current?.scrollTo({
                     x: 0,
                     y: screenHeight,
                     animated: true,
@@ -361,6 +412,7 @@ export default function SwipePremade({
               buttonBarHeight={buttonBarHeight}></DetailView>
           </View>
         </ScrollView>
+
         <ButtonBarWithLinearGradient></ButtonBarWithLinearGradient>
       </View>
     </>
@@ -381,14 +433,10 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
   },
   swipeContainer: {
-    // height: "92%",
     position: "relative",
-    // height: "100%",
     backgroundColor: "transparent",
     transform: [{ translateY: -globalVariables.navBarHeight - 20 }],
     flex: 1.25,
-    // marginTop: 20,
-    // marginBottom: 10,
     zIndex: 100,
   },
   scrollContainer: {
@@ -424,5 +472,20 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "white",
     backgroundColor: "transparent",
+  },
+  centerItem: {
+    paddingTop: 50,
+    transform: [{ translateY: -50 }],
+  },
+  spinnerOverlay: {
+    position: "absolute",
+    zIndex: 100000,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT - globalVariables.realNavBarHeight - 8,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

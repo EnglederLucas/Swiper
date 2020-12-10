@@ -16,14 +16,19 @@ const SettingsScreen = () => {
   const height = 50;
 
   return (
-    <View style={{ display: "flex", height: SCREEN_HEIGHT }}>
+    <View
+      style={{
+        display: "flex",
+        height: SCREEN_HEIGHT,
+        backgroundColor: globalVariables.darkBackgroundSwipeView,
+      }}>
       <NavBar></NavBar>
       <Text
         style={{
           fontSize: 30,
           fontFamily: globalVariables.montserrat600SemiBold,
-          color: globalVariables.light,
           textAlign: "left",
+          color: globalVariables.light,
           marginLeft: 30,
           marginTop: 40,
         }}>

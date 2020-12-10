@@ -80,11 +80,7 @@ export default function NavBar(): ReactElement {
           name="Swipe"
           key="Swipe"
           imgSrc={require("./../../assets/iconsPng/Icons/swiper-icon32.png")}
-          onClick={() =>
-            navigation.navigate("Swipe", {
-              collectionId: "X8NyduiP6chSfEWljHfj",
-            })
-          }
+          onClick={() => navigation.navigate("Swipe")}
           size={40}></NavButton>
         <NavButton
           name="Settings"

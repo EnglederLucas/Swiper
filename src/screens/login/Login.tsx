@@ -17,6 +17,7 @@ const Login = (): JSX.Element => {
 
   const onLoginPressed = async () => {
     try {
+      console.log("onLogin");
       const res = await firebase
         .auth()
         .signInWithEmailAndPassword(email, password);

@@ -8,7 +8,11 @@ import {
   ViewStyle,
   StyleProp,
 } from "react-native";
-import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
+import {
+  ScrollView,
+  TouchableHighlight,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import NavBar from "../../components/NavBar";
 import { getHexColorWithAlpha, globalVariables } from "../../GlobalStyles";
 import * as Animatable from "react-native-animatable";
@@ -57,7 +61,7 @@ export default function SwipeCollections({
       style={{
         backgroundColor: globalVariables.dark,
         padding: 16,
-        height: BOTTOM_SHEET_HEIGHTS[1] - BOTTOM_SHEET_HEADER,
+        height: BOTTOM_SHEET_HEIGHTS[2] - BOTTOM_SHEET_HEADER,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
@@ -141,25 +145,26 @@ export default function SwipeCollections({
     ...props
   }: CollectionCardProps): JSX.Element {
     return (
-      <TouchableHighlight
+      <TouchableOpacity
+        style={{
+          borderRadius: 20,
+          overflow: "hidden",
+        }}
         onPress={() => {
           setSelectedCollection(collection);
-          sheetRef.current.snapTo(300);
+          sheetRef?.current?.snapTo(300);
         }}
-        underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
+        // underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
+        activeOpacity={0.9}
         containerStyle={[
           {
             width: "90%",
             height: height,
             borderRadius: 20,
             overflow: "hidden",
-            // marginBottom: gap,
           },
           props.style,
-        ]}
-        style={{
-          borderRadius: 20,
-        }}>
+        ]}>
         <Animatable.View
           animation={"slideInUp"}
           delay={slideUpDelay}
@@ -174,19 +179,22 @@ export default function SwipeCollections({
             },
             styles.collectionCard1,
           ]}>
-          {/* <LinearGradient
-            style={{ height: "100%", width: "100%", borderRadius: 20 }}
+          <LinearGradient
+            style={{
+              height: "100%",
+              width: "100%",
+              borderRadius: 20,
+              overflow: "hidden",
+            }}
             start={{ x: 0.0, y: 0.5 }}
             end={{ x: 1.0, y: 0.5 }}
-            colors={[
-              globalVariables.primaryOneDark,
-              globalVariables.primaryTwo,
-            ]}>
+            colors={[globalVariables.primaryOne, globalVariables.primaryTwo]}>
             <Text style={styles.collectionName}>{collection.name}</Text>
-          </LinearGradient> */}
-          <Text style={styles.collectionName}>{collection.name}</Text>
+            <Text style={styles.plannedDate}>{collection.plannedDate}</Text>
+          </LinearGradient>
+          {/* <Text style={styles.collectionName}>{collection.name}</Text> */}
         </Animatable.View>
-      </TouchableHighlight>
+      </TouchableOpacity>
     );
   }
 
@@ -229,7 +237,7 @@ export default function SwipeCollections({
             fadeDuration={0}
             style={{ width: 32, height: 32 }}
           />
-          <Text style={styles.collectionName}>Create New Collection</Text>
+          <Text style={styles.createNewCollection}>Create New Collection</Text>
         </View>
       </TouchableHighlight>
     );
@@ -256,6 +264,7 @@ export default function SwipeCollections({
           </Text>
           <View>
             <CreateNewCollectionButton
+              height={75}
               onPress={() => createNewCollection()}
               key="createNewCollection"></CreateNewCollectionButton>
             <FlatList
@@ -271,6 +280,7 @@ export default function SwipeCollections({
               data={collections}
               renderItem={d => (
                 <CollectionCard
+                  height={75}
                   collection={d.item}
                   slideUpDelay={d.index * 200}></CollectionCard>
               )}
@@ -328,7 +338,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   collectionName: {
-    fontSize: 20,
+    fontSize: 22,
+    color: globalVariables.light,
+    fontFamily: globalVariables.montserrat400Regular,
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  plannedDate: {
+    fontSize: 12,
+    color: globalVariables.light,
+    fontFamily: globalVariables.montserrat300Light,
+    alignSelf: "flex-end",
+    justifyContent: "flex-end",
+    marginRight: 10,
+  },
+  createNewCollection: {
+    fontSize: 22,
     color: globalVariables.light,
     fontFamily: globalVariables.montserrat400Regular,
   },
