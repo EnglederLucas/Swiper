@@ -27,6 +27,8 @@ import { ImagePosterSize, MovieResponse } from "../../contracts/TmdbTypes";
 import NavBar from "../../components/NavBar";
 import { FirestoreService } from "../../services/FirestoreService";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { functions } from "./../../firebaseconfig";
+import { call } from "react-native-reanimated";
 
 export type SwipeNavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
@@ -114,60 +116,20 @@ export default function SwipePremade({
 
   const [cardIndex, setCardIndex] = useState(0);
 
-  function renderCard(movie: MovieResponse): JSX.Element {
-    return (
-      <View
-        style={{
-          flex: 1,
-          borderRadius: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}>
-        <ImageCard
-          style={{ width: cardSize.width, height: cardSize.height }}
-          source={TmdbService.getImageSource<ImagePosterSize>(
-            movie?.poster_path,
-            "w780"
-          )}
-          title={movie?.title}
-          description={movie?.tagline}></ImageCard>
-      </View>
-    );
-  }
-
-  const getIconButtons = () => {
-    return (
-      <>
-        <IconButton
-          key="noCross"
-          size={(buttonBarHeight * 2) / 3}
-          style={{ margin: 15 }}
-          icon={require("./../../../assets/iconsPng/Icons/NoCross.png")}
-          onClick={swipeLeft}></IconButton>
-        <IconButton
-          key="star"
-          size={buttonBarHeight / 2}
-          iconFactor={0.5}
-          iconStyle={{ marginBottom: 2 }}
-          icon={require("./../../../assets/iconsPng/Icons/Star.png")}
-          onClick={swipeUp}></IconButton>
-        <IconButton
-          key="heart"
-          size={(buttonBarHeight * 2) / 3}
-          style={{ margin: 15 }}
-          iconFactor={0.5}
-          icon={require("./../../../assets/iconsPng/Icons/Heart.png")}
-          iconStyle={{ marginTop: 4 }}
-          onClick={swipeRight}></IconButton>
-        {/* <Image source={require("./../../../assets/iconsPng/Icons/Heart.png")}></Image> */}
-      </>
-    );
-  };
-
   const onSwiped = type => {
     setCardIndex(cardIndex + 1);
     // setTimeout(() => setCurrentMovie(movieQueue[cardIndex + 1]), 250);
     setCurrentMovie(movieQueue[cardIndex + 1]);
+
+    // const callableReturnMessage = functions().httpsCallable("webApi");
+
+    // callableReturnMessage()
+    //   .then(result => {
+    //     console.log(result.data.output);
+    //   })
+    //   .catch(error => {
+    //     console.log(`error: ${JSON.stringify(error)}`);
+    //   });
 
     console.log("movieIdList", movieIds.splice(0, 10), "cardIndex", cardIndex);
   };
@@ -224,6 +186,56 @@ export default function SwipePremade({
             },
           ]}></LinearGradient>
         <View style={styles.buttonContainer}>{getIconButtons()}</View>
+      </>
+    );
+  };
+
+  function renderCard(movie: MovieResponse): JSX.Element {
+    return (
+      <View
+        style={{
+          flex: 1,
+          borderRadius: 10,
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+        <ImageCard
+          style={{ width: cardSize.width, height: cardSize.height }}
+          source={TmdbService.getImageSource<ImagePosterSize>(
+            movie?.poster_path,
+            "w780"
+          )}
+          title={movie?.title}
+          description={movie?.tagline}></ImageCard>
+      </View>
+    );
+  }
+
+  const getIconButtons = () => {
+    return (
+      <>
+        <IconButton
+          key="noCross"
+          size={(buttonBarHeight * 2) / 3}
+          style={{ margin: 15 }}
+          icon={require("./../../../assets/iconsPng/Icons/NoCross.png")}
+          onClick={swipeLeft}></IconButton>
+        <IconButton
+          key="star"
+          size={buttonBarHeight / 2}
+          iconFactor={0.5}
+          iconStyle={{ marginBottom: 2 }}
+          icon={require("./../../../assets/iconsPng/Icons/Star.png")}
+          onClick={swipeUp}></IconButton>
+        <IconButton
+          key="heart"
+          size={(buttonBarHeight * 2) / 3}
+          style={{ margin: 15 }}
+          iconFactor={0.5}
+          icon={require("./../../../assets/iconsPng/Icons/Heart.png")}
+          iconStyle={{ marginTop: 4 }}
+          onClick={swipeRight}></IconButton>
+        {/* <Image source={require("./../../../assets/iconsPng/Icons/Heart.png")}></Image> */}
       </>
     );
   };

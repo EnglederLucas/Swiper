@@ -51,8 +51,8 @@ export default function ImageCard({
             colors={[
               "rgba(112, 112, 112, 0.2)",
               "rgba(34, 35, 37, 0.2)",
-              "rgba(34, 35, 37, 0.4)",
-              "rgba(34, 35, 37, 0.85)",
+              "rgba(34, 35, 37, 0.5)",
+              "rgba(34, 35, 37, 0.88)",
             ]}
             style={styles.darkGradient}></LinearGradient>
         )}

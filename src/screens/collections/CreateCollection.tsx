@@ -64,7 +64,7 @@ export default function CreateCollection(
                 modalClose?.current?.rotate();
                 setAddMoviesVisible(false);
               }}>
-              <View style={{ padding: 20 }}>
+              <View style={{ padding: 20, paddingTop: 40 }}>
                 <Animatable.Image
                   ref={modalClose}
                   animation={"rotate"}
@@ -154,7 +154,7 @@ export default function CreateCollection(
               </Text>
               <Animatable.Image
                 animation={"rubberBand"}
-                duration={500}
+                duration={2000}
                 iterationDelay={2000}
                 iterationCount={"infinite"}
                 easing={"ease-out-quad"}
@@ -177,7 +177,7 @@ export default function CreateCollection(
             // borderColor: "red",
             paddingBottom: 10,
           }}>
-          <TouchableOpacity onPress={() => props.onCancel()}>
+          <TouchableHighlight onPress={() => props.onCancel()}>
             <Text
               style={[
                 getDefaultTextStyle(20, 300),
@@ -189,7 +189,7 @@ export default function CreateCollection(
               ]}>
               CANCEL
             </Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
           <SwiperButton
             title="Create"
             onPress={() => createNewCollection()}
