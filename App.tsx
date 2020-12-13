@@ -28,9 +28,7 @@ export type AuthenticationStackParameterList = {
   SwipeCollections: undefined;
 };
 
-export const AuthenticationStack = createStackNavigator<
-  AuthenticationStackParameterList
->();
+export const AuthenticationStack = createStackNavigator<AuthenticationStackParameterList>();
 
 const AuthenticationNavigator = () => {
   const [userId, setUserId] = useState("");
