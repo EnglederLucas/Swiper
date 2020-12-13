@@ -8,6 +8,8 @@ import {
   ViewStyle,
   StyleProp,
   ImageSourcePropType,
+  Modal,
+  TouchableOpacity as RNTouchableOpacity,
 } from "react-native";
 import {
   ScrollView,
@@ -35,6 +37,12 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
 import { SwiperButtonWithIcon } from "../../components/SwiperButton";
 import { Modalize } from "react-native-modalize";
 import CreateCollection from "./CreateCollection";
+import { QRCode } from "react-native-custom-qr-codes-expo";
+import { BarCodeScanner } from "expo";
+import { Button } from "react-native";
+import QRCodeScanner from "../../components/QRCodeScanner";
+import { auth } from "../../firebaseconfig";
+import Axios from "axios";
 
 interface CollectionCardProps {
   collection: SwipeCollection;
@@ -56,6 +64,8 @@ export default function SwipeCollections({
   const [animationAlreadyRan, setAnimationAlreadyRan] = useState(false);
   const firestoreService = FirestoreService.getInstance();
 
+  const [scanVisible, setScanVisible] = useState(false);
+
   const sheetRef = React.useRef<BottomSheet>(null);
   const createCollectionSheetRef = React.useRef<BottomSheet>(null);
 
@@ -67,6 +77,8 @@ export default function SwipeCollections({
   const [selectedCollection, setSelectedCollection] = useState<
     SwipeCollection | undefined | null
   >(undefined);
+
+  const [shareCollectionVisible, setShareCollectionVisible] = useState(false);
 
   useEffect(() => {
     let isMounted = true; // note this flag denote mount status
@@ -85,9 +97,71 @@ export default function SwipeCollections({
 
   const modalizeRef = useRef<Modalize>(null);
 
+  const modalClose = useRef<any>(null);
+
   const onOpen = () => {
     modalizeRef.current?.open();
   };
+
+  function ShareModal(): JSX.Element {
+    return (
+      <Modal
+        animationType="slide"
+        style={{ alignItems: "center", backgroundColor: globalVariables.dark }}
+        transparent={true}
+        statusBarTranslucent={true}
+        visible={shareCollectionVisible}>
+        <View
+          style={{
+            height: "100%",
+            width: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <View
+            style={{
+              backgroundColor: globalVariables.darkBackgroundSwipeView,
+              height: "42%",
+              width: "80%",
+              borderRadius: 20,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              // padding: 20,
+            }}>
+            <RNTouchableOpacity
+              style={{
+                alignSelf: "flex-end",
+              }}
+              onPress={() => {
+                modalClose?.current?.rotate();
+                setShareCollectionVisible(false);
+              }}>
+              <View
+                style={{ paddingTop: 30, marginRight: 30, marginBottom: 30 }}>
+                <Animatable.Image
+                  ref={modalClose}
+                  animation={"rotate"}
+                  direction={"alternate"}
+                  duration={750}
+                  easing={"ease-out-quad"}
+                  source={require("./../../../assets/iconsPng/feather-icon/x128.png")}
+                  fadeDuration={0}
+                  style={{ width: 32, height: 32 }}
+                />
+              </View>
+            </RNTouchableOpacity>
+
+            <QRCode
+              content={selectedCollection?.id}
+              color={getHexColorWithAlpha(globalVariables.light, 70)}></QRCode>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 
   const renderContent = () => (
     <View
@@ -138,7 +212,7 @@ export default function SwipeCollections({
           // icon={require("../../../assets/iconsPng/feather-icon/plus.png")}
           title="Share"
           style={{ marginRight: 20 }}
-          onPress={() => console.log("Share")}
+          onPress={() => setShareCollectionVisible(true)}
           width={SCREEN_WIDTH / 2.5}
           gradientProps={{
             colors: [globalVariables.primaryTwo, globalVariables.primaryOne],
@@ -319,12 +393,27 @@ export default function SwipeCollections({
   }
 
   function scanCollection() {
-    //TODO QR Code Scan dies das
+    setScanVisible(true);
+  }
+
+  async function handleScan(data: any) {
+    const uid = auth()?.currentUser?.uid;
+    console.log(uid);
+
+    if (!uid) return null;
+
+    await Axios.post<void>(
+      " https://us-central1-swiper-9cfe9.cloudfunctions.net/webApi/swipeCollection",
+      {
+        swipeCollectionId: data,
+        userId: uid,
+      }
+    );
   }
 
   return (
     <>
-      <NavBar></NavBar>
+      {!scanVisible && <NavBar></NavBar>}
       <View style={styles.container}>
         <View style={styles.contentWrapper}>
           <Text
@@ -399,6 +488,14 @@ export default function SwipeCollections({
         renderHeader={renderHeader}
       />
       {/* <Modalize ref={modalizeRef}>...your content</Modalize> */}
+      <ShareModal></ShareModal>
+      {scanVisible && (
+        <QRCodeScanner
+          onScanned={data => {
+            console.log(data);
+            handleScan(data).then(() => setScanVisible(false));
+          }}></QRCodeScanner>
+      )}
     </>
   );
 }
