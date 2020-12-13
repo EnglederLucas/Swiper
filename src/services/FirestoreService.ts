@@ -134,7 +134,7 @@ export class FirestoreService {
     let newSwipeCollection: SwipeCollection;
 
     try {
-      newSwipeCollection = await (
+      newSwipeCollection = (
         await (
           await this.swipeCollections
             .withConverter(swipeCollectionConverter)

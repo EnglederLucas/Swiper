@@ -1,20 +1,15 @@
 import { LinearGradient, LinearGradientProps } from "expo-linear-gradient";
 import React from "react";
 import {
-  ButtonProps,
   Text,
-  Button,
   ViewStyle,
   StyleProp,
   View,
-  Pressable,
   Image,
   ImageSourcePropType,
   ImageStyle,
 } from "react-native";
 import {
-  TouchableHighlight,
-  TouchableWithoutFeedback,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { globalVariables } from "../GlobalStyles";

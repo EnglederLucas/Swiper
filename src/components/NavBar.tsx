@@ -74,18 +74,30 @@ export default function NavBar(): ReactElement {
         <NavButton
           name="SwipeCollections"
           key="SwipeCollections"
-          imgSrc={require("./../../assets/iconsPng/feather-icon/grid.png")}
+          imgSrc={
+            route.name === "SwipeCollections"
+              ? require("./../../assets/iconsPng/Icons/GridColored.png")
+              : require("./../../assets/iconsPng/feather-icon/grid.png")
+          }
           onClick={() => navigation.navigate("SwipeCollections")}></NavButton>
         <NavButton
           name="Swipe"
           key="Swipe"
-          imgSrc={require("./../../assets/iconsPng/Icons/swiper-icon32.png")}
+          imgSrc={
+            route.name === "Swipe"
+              ? require("./../../assets/iconsPng/Icons/PurpleSwiperIcon128.png")
+              : require("./../../assets/iconsPng/Icons/PurpleSwiperIcon64.png")
+          }
           onClick={() => navigation.navigate("Swipe")}
-          size={40}></NavButton>
+          size={45}></NavButton>
         <NavButton
           name="Settings"
           key="Settings"
-          imgSrc={require("./../../assets/iconsPng/feather-icon/settings.png")}
+          imgSrc={
+            route.name === "Settings"
+              ? require("./../../assets/iconsPng/Icons/SettingsColored.png")
+              : require("./../../assets/iconsPng/feather-icon/settings.png")
+          }
           onClick={() => navigation.navigate("Settings")}></NavButton>
       </View>
     </View>

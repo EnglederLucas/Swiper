@@ -17,6 +17,7 @@ interface SimpleTextInputProps {
   borderBottomColor?: string;
   margin?: number;
   cursorColor?: string;
+  fontSize?: number;
   wrapperStyle?: StyleProp<ViewStyle>;
 }
 
@@ -25,6 +26,7 @@ export default function SimpleTextInput({
   height = 45,
   backgroundColor,
   margin = 3,
+
   ...props
 }: SimpleTextInputProps & TextInputProps): JSX.Element {
   const [isFocused, setIsFocused] = useState(false);
@@ -52,9 +54,11 @@ export default function SimpleTextInput({
       paddingHorizontal: 20,
       borderBottomColor: globalVariables.light,
       borderBottomWidth: 3,
+      fontSize: height / 3,
     },
     focused: {
       borderBottomColor: globalVariables.primaryOne,
+      fontSize: height / 3,
     },
   });
 
@@ -68,6 +72,7 @@ export default function SimpleTextInput({
         onBlur={() => onBlur()}
         onFocus={() => onFocus()}
         selectionColor={props.cursorColor}
+        allowFontScaling={true}
         {...props}
       />
     </View>
