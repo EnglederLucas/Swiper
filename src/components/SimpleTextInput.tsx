@@ -50,6 +50,7 @@ export default function SimpleTextInput({
       height: height,
       color: globalVariables.light,
       backgroundColor,
+      justifyContent: "center",
       fontFamily: "Montserrat_400Regular",
       paddingHorizontal: 20,
       borderBottomColor: globalVariables.light,

@@ -343,8 +343,8 @@ export type ImageSize =
   | ImageStillSize;
 
 export enum CrewDepartment {
-  Director = 0,
-  Directing = 1,
+  "Director" = 0,
+  "Directing" = 1,
   "Writing" = 2,
   "Story" = 3,
   "Screenplay" = 4,
