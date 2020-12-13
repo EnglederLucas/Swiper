@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,12 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import NavBar from "../../components/NavBar";
-import { getHexColorWithAlpha, globalVariables } from "../../GlobalStyles";
+import {
+  getDefaultTextStyle,
+  getHexColorWithAlpha,
+  globalStyles,
+  globalVariables,
+} from "../../GlobalStyles";
 import * as Animatable from "react-native-animatable";
 import { AuthenticationStackParameterList } from "../../../App";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -24,9 +29,11 @@ import { FirestoreService } from "../../services/FirestoreService";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
-import { SwiperButton } from "../../components";
+import { SimpleTextInput, SwiperButton } from "../../components";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
 import { SwiperButtonWithIcon } from "../../components/SwiperButton";
+import { Modalize } from "react-native-modalize";
+import CreateCollection from "./CreateCollection";
 
 interface CollectionCardProps {
   collection: SwipeCollection;
@@ -45,27 +52,77 @@ export default function SwipeCollections({
   navigation,
 }: SwipeCollectionProps): JSX.Element {
   const [collections, setCollections] = useState<SwipeCollection[]>([]);
+  const [animationAlreadyRan, setAnimationAlreadyRan] = useState(false);
   const firestoreService = FirestoreService.getInstance();
 
   const sheetRef = React.useRef<BottomSheet>(null);
+  const createCollectionSheetRef = React.useRef<BottomSheet>(null);
 
-  const BOTTOM_SHEET_HEIGHTS = [0, 300, 450];
+  const BOTTOM_SHEET_HEIGHTS = [0, 200, 200];
+  const CREATE_COLLECTION_SHEET_HEIGHTS = [0, 460, 460];
+
   const BOTTOM_SHEET_HEADER = 50;
 
   const [selectedCollection, setSelectedCollection] = useState<
     SwipeCollection | undefined | null
   >(undefined);
 
+  useEffect(() => {
+    let isMounted = true; // note this flag denote mount status
+    console.log("Fetching Collections");
+
+    firestoreService.getUserSwipeCollections().then(c => {
+      if (isMounted) setCollections(c?.creator.concat(c?.member) ?? []);
+    });
+
+    setAnimationAlreadyRan(false);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const modalizeRef = useRef<Modalize>(null);
+
+  const onOpen = () => {
+    modalizeRef.current?.open();
+  };
+
   const renderContent = () => (
     <View
       style={{
         backgroundColor: globalVariables.dark,
-        padding: 16,
+        paddingBottom: 30,
         height: BOTTOM_SHEET_HEIGHTS[2] - BOTTOM_SHEET_HEADER,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end",
+        justifyContent: "space-between",
       }}>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          flex: 3,
+          width: "90%",
+          marginLeft: "8%",
+        }}>
+        <View>
+          <Text style={[getDefaultTextStyle(24, 500)]}>
+            {selectedCollection?.name}
+          </Text>
+          <Text
+            style={[
+              getDefaultTextStyle(10, 500),
+              { color: "rgba(0,0,0, 0.8)" },
+            ]}>
+            {selectedCollection?.plannedDate}
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ flexDirection: "row" }}>{}</View>
+
       <View
         style={{
           alignSelf: "flex-end",
@@ -74,6 +131,7 @@ export default function SwipeCollections({
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
+          flex: 1,
         }}>
         <SwiperButton
           // icon={require("../../../assets/iconsPng/feather-icon/plus.png")}
@@ -115,7 +173,7 @@ export default function SwipeCollections({
         }}>
         <View
           style={{
-            backgroundColor: globalVariables.light,
+            backgroundColor: getHexColorWithAlpha(globalVariables.light, 70),
             borderRadius: 10,
             height: 5,
             width: 50,
@@ -124,18 +182,21 @@ export default function SwipeCollections({
     );
   };
 
-  useEffect(() => {
-    let isMounted = true; // note this flag denote mount status
-    console.log("Fetching Collections");
-
-    firestoreService.getUserSwipeCollections().then(c => {
-      if (isMounted) setCollections(c?.creator.concat(c?.member) ?? []);
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const renderCreateCollection = (): JSX.Element => {
+    return (
+      <View
+        style={{
+          backgroundColor: globalVariables.dark,
+          paddingBottom: 15,
+          height: CREATE_COLLECTION_SHEET_HEIGHTS[2] - BOTTOM_SHEET_HEADER,
+        }}>
+        <CreateCollection
+          onCancel={() =>
+            createCollectionSheetRef?.current?.snapTo(0)
+          }></CreateCollection>
+      </View>
+    );
+  };
 
   function CollectionCard({
     collection,
@@ -152,7 +213,7 @@ export default function SwipeCollections({
         }}
         onPress={() => {
           setSelectedCollection(collection);
-          sheetRef?.current?.snapTo(300);
+          sheetRef?.current?.snapTo(BOTTOM_SHEET_HEIGHTS[1]);
         }}
         // underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
         activeOpacity={0.9}
@@ -166,10 +227,12 @@ export default function SwipeCollections({
           props.style,
         ]}>
         <Animatable.View
-          animation={"slideInUp"}
+          animation={animationAlreadyRan ? "" : "slideInUp"}
           delay={slideUpDelay}
           duration={1000}
           easing={"ease-out-cubic"}
+          onAnimationEnd={() => setAnimationAlreadyRan(true)}
+          key={collection.id + "AnimationView"}
           style={[
             {
               height: height,
@@ -224,8 +287,8 @@ export default function SwipeCollections({
           style={{
             height: height,
             borderRadius: 20,
-            borderWidth: 5,
-            borderColor: "white",
+            borderWidth: 3,
+            borderColor: getHexColorWithAlpha(globalVariables.light, 80),
             borderStyle: "solid",
             display: "flex",
             justifyContent: "space-evenly",
@@ -244,7 +307,9 @@ export default function SwipeCollections({
   }
 
   function createNewCollection() {
-    // firestoreService.addSwipeCollection({name: });
+    createCollectionSheetRef?.current?.snapTo(
+      CREATE_COLLECTION_SHEET_HEIGHTS[1]
+    );
   }
 
   return (
@@ -268,6 +333,7 @@ export default function SwipeCollections({
               onPress={() => createNewCollection()}
               key="createNewCollection"></CreateNewCollectionButton>
             <FlatList
+              key="flatList"
               // contentContainerStyle={{ marginTop: 20 }}
               ItemSeparatorComponent={() => (
                 <View
@@ -280,6 +346,7 @@ export default function SwipeCollections({
               data={collections}
               renderItem={d => (
                 <CollectionCard
+                  key={d.item.id}
                   height={75}
                   collection={d.item}
                   slideUpDelay={d.index * 200}></CollectionCard>
@@ -306,6 +373,13 @@ export default function SwipeCollections({
         renderContent={renderContent}
         renderHeader={renderHeader}
       />
+      <BottomSheet
+        ref={createCollectionSheetRef}
+        snapPoints={CREATE_COLLECTION_SHEET_HEIGHTS}
+        renderContent={renderCreateCollection}
+        renderHeader={renderHeader}
+      />
+      {/* <Modalize ref={modalizeRef}>...your content</Modalize> */}
     </>
   );
 }
@@ -342,7 +416,7 @@ const styles = StyleSheet.create({
     color: globalVariables.light,
     fontFamily: globalVariables.montserrat400Regular,
     marginTop: 10,
-    marginLeft: 10,
+    marginLeft: 15,
   },
   plannedDate: {
     fontSize: 12,
