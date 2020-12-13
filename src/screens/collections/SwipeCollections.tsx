@@ -7,6 +7,7 @@ import {
   FlatList,
   ViewStyle,
   StyleProp,
+  ImageSourcePropType,
 } from "react-native";
 import {
   ScrollView,
@@ -261,25 +262,30 @@ export default function SwipeCollections({
     );
   }
 
-  function CreateNewCollectionButton({
+  function ActionButton({
     gap = 20,
     height = 100,
     ...props
   }: Omit<CollectionCardProps, "collection"> & {
     onPress: () => void;
+    imgSrc: ImageSourcePropType;
+    title: string;
+    style?: StyleProp<ViewStyle>;
   }): JSX.Element {
     return (
       <TouchableHighlight
-        onPress={createNewCollection}
+        onPress={() => props.onPress()}
         underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
-        containerStyle={{
-          width: "90%",
-          height: height,
-          borderRadius: 20,
-          overflow: "hidden",
-          marginTop: gap,
-          marginBottom: gap,
-        }}
+        containerStyle={[
+          {
+            width: "90%",
+            height: height,
+            borderRadius: 20,
+            overflow: "hidden",
+            marginBottom: gap,
+          },
+          props.style,
+        ]}
         style={{
           borderRadius: 20,
         }}>
@@ -296,11 +302,11 @@ export default function SwipeCollections({
             alignItems: "center",
           }}>
           <Image
-            source={require("./../../../assets/iconsPng/feather-icon/plus48.png")}
+            source={props.imgSrc}
             fadeDuration={0}
             style={{ width: 32, height: 32 }}
           />
-          <Text style={styles.createNewCollection}>Create New Collection</Text>
+          <Text style={styles.createNewCollection}>{props.title}</Text>
         </View>
       </TouchableHighlight>
     );
@@ -310,6 +316,10 @@ export default function SwipeCollections({
     createCollectionSheetRef?.current?.snapTo(
       CREATE_COLLECTION_SHEET_HEIGHTS[1]
     );
+  }
+
+  function scanCollection() {
+    //TODO QR Code Scan dies das
   }
 
   return (
@@ -328,10 +338,19 @@ export default function SwipeCollections({
             Collections
           </Text>
           <View>
-            <CreateNewCollectionButton
+            <ActionButton
+              style={{ marginTop: 20 }}
+              title="Create Collection"
               height={75}
               onPress={() => createNewCollection()}
-              key="createNewCollection"></CreateNewCollectionButton>
+              imgSrc={require("./../../../assets/iconsPng/feather-icon/plus48.png")}
+              key="createNewCollection"></ActionButton>
+            <ActionButton
+              title=" Scan Collection"
+              height={75}
+              onPress={() => scanCollection()}
+              imgSrc={require("./../../../assets/iconsPng/feather-icon/qr-code.png")}
+              key="scanCollection"></ActionButton>
             <FlatList
               key="flatList"
               // contentContainerStyle={{ marginTop: 20 }}
