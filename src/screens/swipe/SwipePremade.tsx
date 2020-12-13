@@ -29,6 +29,10 @@ import { FirestoreService } from "../../services/FirestoreService";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { functions } from "./../../firebaseconfig";
 import { call } from "react-native-reanimated";
+import {
+  FireFunctionsService,
+  SwipeResult,
+} from "../../services/FireFunctionsService";
 
 export type SwipeNavigationProps = StackScreenProps<
   AuthenticationStackParameterList,
@@ -67,10 +71,10 @@ export default function SwipePremade({
 
     if (!collectionId) return;
 
-    console.log("CollectionId", collectionId);
+    // console.log("CollectionId", collectionId);
 
-    console.log(loadingMovies);
-    console.log(movieQueue);
+    // console.log(loadingMovies);
+    // console.log(movieQueue);
 
     init().then(res => {
       if (isMounted) {
@@ -116,20 +120,20 @@ export default function SwipePremade({
 
   const [cardIndex, setCardIndex] = useState(0);
 
-  const onSwiped = type => {
+  const onSwiped = (type: SwipeResult) => {
     setCardIndex(cardIndex + 1);
     // setTimeout(() => setCurrentMovie(movieQueue[cardIndex + 1]), 250);
+
+    console.log(type);
+    const functions = FireFunctionsService.getInstance();
+    functions
+      .sendSwipeResult(collectionId, currentMovie?.id, type)
+      .then(res => {
+        if (res) alert("It's a Match!");
+      })
+      .catch(() => console.log("Request Failed"));
+
     setCurrentMovie(movieQueue[cardIndex + 1]);
-
-    // const callableReturnMessage = functions().httpsCallable("webApi");
-
-    // callableReturnMessage()
-    //   .then(result => {
-    //     console.log(result.data.output);
-    //   })
-    //   .catch(error => {
-    //     console.log(`error: ${JSON.stringify(error)}`);
-    //   });
 
     console.log("movieIdList", movieIds.splice(0, 10), "cardIndex", cardIndex);
   };
@@ -294,9 +298,9 @@ export default function SwipePremade({
                   backgroundColor: globalVariables.darkBackgroundSwipeView,
                 }}
                 cardStyle={{ height: cardSize.height }}
-                onSwipedLeft={() => onSwiped("left")}
-                onSwipedRight={() => onSwiped("right")}
-                onSwipedTop={() => onSwiped("top")}
+                onSwipedLeft={() => onSwiped("nope")}
+                onSwipedRight={() => onSwiped("like")}
+                onSwipedTop={() => onSwiped("superLike")}
                 horizontalThreshold={SCREEN_WIDTH / 6}
                 // onSwipedBottom={() => this.onSwiped("bottom")}
                 onTapCard={() =>

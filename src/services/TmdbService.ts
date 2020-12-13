@@ -74,8 +74,6 @@ export class TmdbService {
     );
   }
 
-  //https://api.themoviedb.org/3/movie/550?api_key=dc73a84a68599fc5020c628884422957
-
   private constructor() {
     this.apiKey = TMDB_API_KEY;
     this.axiosInit();
@@ -210,6 +208,9 @@ export class TmdbService {
     crew.sort((a, b) => {
       if (!a.profile_path) return 1;
       if (!b.profile_path) return -1;
+
+      if (a.job == "Director") return -1;
+      if (b.job == "Director") return 1;
 
       return (
         ((CrewDepartment[a.department] as unknown) as number) -

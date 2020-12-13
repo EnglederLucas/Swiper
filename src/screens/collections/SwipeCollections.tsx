@@ -60,7 +60,7 @@ export default function SwipeCollections({
   const createCollectionSheetRef = React.useRef<BottomSheet>(null);
 
   const BOTTOM_SHEET_HEIGHTS = [0, 200, 200];
-  const CREATE_COLLECTION_SHEET_HEIGHTS = [0, 460, 460];
+  const CREATE_COLLECTION_SHEET_HEIGHTS = [0, 500, 500];
 
   const BOTTOM_SHEET_HEADER = 50;
 
@@ -201,7 +201,6 @@ export default function SwipeCollections({
 
   function CollectionCard({
     collection,
-    slideUpDelay = 1000,
     gap = 20,
     height = 100,
     ...props
@@ -229,8 +228,8 @@ export default function SwipeCollections({
         ]}>
         <Animatable.View
           animation={animationAlreadyRan ? "" : "slideInUp"}
-          delay={slideUpDelay}
-          duration={1000}
+          delay={props.slideUpDelay ?? 200}
+          duration={500}
           easing={"ease-out-cubic"}
           onAnimationEnd={() => setAnimationAlreadyRan(true)}
           key={collection.id + "AnimationView"}
@@ -368,7 +367,7 @@ export default function SwipeCollections({
                   key={d.item.id}
                   height={75}
                   collection={d.item}
-                  slideUpDelay={d.index * 200}></CollectionCard>
+                  slideUpDelay={d.index * 300}></CollectionCard>
               )}
               keyExtractor={item => item.id}
             />

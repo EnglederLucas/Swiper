@@ -15,6 +15,7 @@ import {
   GestureDirection,
   StackCardStyleInterpolator,
 } from "@react-navigation/stack/lib/typescript/src/types";
+// import { SplashScreen } from "expo";
 
 LogBox.ignoreLogs(["Setting a timer"]);
 // console.disableYellowBox = true;

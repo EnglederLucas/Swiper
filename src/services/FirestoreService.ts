@@ -4,6 +4,7 @@ import {
   SwipeCollectionCreationDto,
 } from "./../contracts/Collection";
 import { firestore, auth } from "./../firebaseconfig";
+import { functions } from "firebase";
 
 type FirestoreCollection = firebase.firestore.CollectionReference<
   firebase.firestore.DocumentData
@@ -111,7 +112,7 @@ export class FirestoreService {
     let memberData = member?.docs?.map(doc => doc.data());
 
     memberData = memberData.filter(
-      c => creatorData.find(creator => creator.id === c.id) === null
+      c => !creatorData.find(creator => creator.id === c.id)
     );
 
     return { creator: creatorData, member: memberData };
@@ -134,6 +135,7 @@ export class FirestoreService {
     let newSwipeCollection: SwipeCollection;
 
     try {
+      console.log("SwipeCollection", swipeCollection);
       newSwipeCollection = (
         await (
           await this.swipeCollections
@@ -141,6 +143,17 @@ export class FirestoreService {
             .add(swipeCollection)
         ).get()
       ).data();
+      console.log("New Collection", newCollection);
+
+      await Promise.all(
+        newCollection.movieIdList.map(async id => {
+          await this.swipeCollections
+            .doc(newSwipeCollection?.id)
+            .collection("movies")
+            .doc(id.toString())
+            .set({ likes: [], nopes: [] });
+        })
+      );
 
       return newSwipeCollection;
     } catch (err) {
@@ -148,6 +161,20 @@ export class FirestoreService {
     }
 
     return null;
+  }
+
+  public async createCollection(newCollection: {
+    collectionName: string;
+    tmdbIdList: number;
+  }): Promise<void> {
+    const movieIds = await this.tmdbService.getIdsOfMovieList(
+      newCollection.tmdbIdList
+    );
+
+    await this.addSwipeCollection({
+      name: newCollection.collectionName,
+      movieIdList: movieIds,
+    });
   }
 
   // if (res.movieIdList) {

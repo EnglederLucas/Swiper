@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 } from "../../GlobalStyles";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
 import * as Animatable from "react-native-animatable";
+import { FirestoreService } from "../../services/FirestoreService";
 
 type CreateCollectionProps = {
   onCancel: () => void;
@@ -28,12 +29,69 @@ export default function CreateCollection(
   const [collectionName, setCollectionName] = useState("");
   const [plannedDate, setPlannedDate] = useState(Date.now());
 
+  const [searchString, setSearchString] = useState("");
+
   const [addMoviesVisible, setAddMoviesVisible] = useState(false);
+
+  const [searchResults, setSearchResults] = useState("");
+  const [importedList, setImportedList] = useState<string>("");
+  const [importListVisible, setImportListVisible] = useState(false);
+
+  const [listId, setListId] = useState("");
+
+  // useEffect(() => {
+  // }, [searchString]);
 
   const modalClose = useRef<any>(null);
 
   function createNewCollection() {
+    const service = FirestoreService.getInstance();
+
+    service
+      .createCollection({
+        collectionName: collectionName,
+        tmdbIdList: parseInt(listId),
+      })
+      .then(() => props.onCancel());
+
     return;
+  }
+
+  function ImportListModal(): JSX.Element {
+    return (
+      <Modal
+        style={{ height: SCREEN_HEIGHT, backgroundColor: globalVariables.dark }}
+        transparent={true}
+        statusBarTranslucent={true}
+        visible={importListVisible}>
+        <View
+          style={{
+            height: "100%",
+            width: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <View
+            style={{
+              justifyContent: "space-around",
+              flexDirection: "column",
+              backgroundColor: globalVariables.dark,
+              alignItems: "center",
+              height: "20%",
+              width: "75%",
+            }}>
+            <SimpleTextInput
+              width={230}
+              height={50}
+              key="TMDBListInput"
+              value={listId}
+              placeholder="Tmdb List Id"
+              onChangeText={text => setListId(text)}></SimpleTextInput>
+          </View>
+        </View>
+      </Modal>
+    );
   }
 
   function AddMoviesModal(): JSX.Element {
@@ -50,21 +108,19 @@ export default function CreateCollection(
             height: "100%",
             width: "100%",
             backgroundColor: globalVariables.darkBackgroundSwipeView,
-            // backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}>
           <View
             style={{
               height: globalVariables.navBarHeight,
               justifyContent: "flex-end",
               flexDirection: "row",
-              // padding: 20,
             }}>
             <TouchableOpacity
               onPress={() => {
                 modalClose?.current?.rotate();
                 setAddMoviesVisible(false);
               }}>
-              <View style={{ padding: 20, paddingTop: 40 }}>
+              <View style={{ padding: 25, paddingTop: 50 }}>
                 <Animatable.Image
                   ref={modalClose}
                   animation={"rotate"}
@@ -72,6 +128,35 @@ export default function CreateCollection(
                   duration={750}
                   easing={"ease-out-quad"}
                   source={require("./../../../assets/iconsPng/feather-icon/x128.png")}
+                  fadeDuration={0}
+                  style={{ width: 32, height: 32 }}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              margin: 25,
+            }}>
+            <SimpleTextInput
+              width={260}
+              height={50}
+              value={importedList}
+              placeholder="Import List"
+              onChangeText={text => setImportedList(text)}></SimpleTextInput>
+            <TouchableOpacity
+              onPress={() => {
+                setAddMoviesVisible(false);
+              }}>
+              <View style={{ padding: 20, paddingTop: 40 }}>
+                <Animatable.Image
+                  animation={"bounceIn"}
+                  duration={750}
+                  easing={"ease-out-quad"}
+                  source={require("./../../../assets/iconsPng/feather-icon/upload.png")}
                   fadeDuration={0}
                   style={{ width: 32, height: 32 }}
                 />
@@ -87,8 +172,6 @@ export default function CreateCollection(
     <View>
       <View
         style={{
-          // borderColor: "red",
-          // borderWidth: 3,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -97,8 +180,6 @@ export default function CreateCollection(
         }}>
         <View
           style={{
-            // borderColor: "green",
-            // borderWidth: 3,
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
@@ -113,7 +194,7 @@ export default function CreateCollection(
               width={260}
               height={50}
               value={collectionName}
-              placeholder="Name"
+              placeholder="Collection Name"
               onChangeText={text => setCollectionName(text)}></SimpleTextInput>
           </View>
         </View>
@@ -168,13 +249,43 @@ export default function CreateCollection(
 
         <View
           style={{
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "row",
+          }}>
+          <Text
+            style={[
+              getDefaultTextStyle(16, 300),
+              {
+                color: getHexColorWithAlpha(globalVariables.light, 90),
+                marginRight: 50,
+              },
+              {
+                alignContent: "center",
+                justifyContent: "center",
+                textAlign: "center",
+              },
+            ]}>
+            Or
+          </Text>
+          <SimpleTextInput
+            // style={{ transform: [{ translateX: -30 }] }}
+            width={150}
+            height={50}
+            key="TMDBListInput"
+            value={listId}
+            placeholder="Tmdb List Id"
+            onChangeText={text => setListId(text)}></SimpleTextInput>
+        </View>
+
+        <View
+          style={{
             alignSelf: "flex-end",
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
             width: "100%",
-            // borderColor: "red",
             paddingBottom: 10,
           }}>
           <TouchableHighlight onPress={() => props.onCancel()}>
@@ -200,46 +311,8 @@ export default function CreateCollection(
             height={50}></SwiperButton>
         </View>
       </View>
-      <AddMoviesModal></AddMoviesModal>
+      {/* <AddMoviesModal></AddMoviesModal> */}
+      {/* <ImportListModal></ImportListModal> */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  openButton: {
-    backgroundColor: "#F194FF",
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-});
