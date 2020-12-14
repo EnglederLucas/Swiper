@@ -86,9 +86,12 @@ export default function SwipeCollections({
     let isMounted = true; // note this flag denote mount status
     console.log("Fetching Collections");
 
-    firestoreService.getUserSwipeCollections().then(c => {
-      if (isMounted) setCollections(c?.creator.concat(c?.member) ?? []);
-    });
+    firestoreService
+      .getUserSwipeCollections()
+      .then(c => {
+        if (isMounted) setCollections(c?.creator.concat(c?.member) ?? []);
+      })
+      .catch(err => console.log("Firebase Error"));
 
     setAnimationAlreadyRan(false);
 
@@ -96,6 +99,14 @@ export default function SwipeCollections({
       isMounted = false;
     };
   }, []);
+
+  function getCollections() {
+    firestoreService.getUserSwipeCollections().then(c => {
+      setCollections(c?.creator.concat(c?.member) ?? []);
+    });
+
+    setAnimationAlreadyRan(false);
+  }
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -269,9 +280,10 @@ export default function SwipeCollections({
           height: CREATE_COLLECTION_SHEET_HEIGHTS[2] - BOTTOM_SHEET_HEADER,
         }}>
         <CreateCollection
-          onCancel={() =>
-            createCollectionSheetRef?.current?.snapTo(0)
-          }></CreateCollection>
+          onCancel={() => {
+            createCollectionSheetRef?.current?.snapTo(0);
+            getCollections();
+          }}></CreateCollection>
       </View>
     );
   };
@@ -516,6 +528,7 @@ export default function SwipeCollections({
           onScanned={data => {
             console.log(data);
             handleScan(data).then(() => setScanVisible(false));
+            getCollections();
           }}></QRCodeScanner>
       )}
     </>

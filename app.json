@@ -1,6 +1,5 @@
 {
   "expo": {
-    "entryPoint": "App.tsx",
     "name": "Swiper",
     "slug": "Swiper",
     "version": "1.1.0",
@@ -14,9 +13,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },

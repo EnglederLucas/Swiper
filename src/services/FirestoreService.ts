@@ -136,6 +136,7 @@ export class FirestoreService {
 
     try {
       console.log("SwipeCollection", swipeCollection);
+
       newSwipeCollection = (
         await (
           await this.swipeCollections

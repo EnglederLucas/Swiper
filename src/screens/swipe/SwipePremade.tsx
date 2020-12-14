@@ -113,7 +113,7 @@ export default function SwipePremade({
     return { movieIdList: movies, fetchedMovies: fetchedMovies };
   }
 
-  const [, setState] = useState({
+  const [state, setState] = useState({
     swipedAllCards: false,
     swipeDirection: "",
   });
