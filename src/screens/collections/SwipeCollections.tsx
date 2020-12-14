@@ -49,7 +49,9 @@ interface CollectionCardProps {
   slideUpDelay?: number;
   gap?: number;
   height?: number;
+  animate?: boolean;
   style?: StyleProp<ViewStyle>;
+  onAnimationEnd?: () => void;
 }
 
 export type SwipeCollectionProps = StackScreenProps<
@@ -110,6 +112,7 @@ export default function SwipeCollections({
         style={{ alignItems: "center", backgroundColor: globalVariables.dark }}
         transparent={true}
         statusBarTranslucent={true}
+        presentationStyle={"overFullScreen"}
         visible={shareCollectionVisible}>
         <View
           style={{
@@ -122,7 +125,7 @@ export default function SwipeCollections({
           <View
             style={{
               backgroundColor: globalVariables.darkBackgroundSwipeView,
-              height: "42%",
+              height: 400,
               width: "80%",
               borderRadius: 20,
               display: "flex",
@@ -275,8 +278,9 @@ export default function SwipeCollections({
 
   function CollectionCard({
     collection,
-    gap = 20,
     height = 100,
+    animate = true,
+
     ...props
   }: CollectionCardProps): JSX.Element {
     return (
@@ -298,22 +302,27 @@ export default function SwipeCollections({
             borderRadius: 20,
             overflow: "hidden",
           },
+          props.gap ? { marginBottom: props.gap } : {},
+
           props.style,
         ]}>
         <Animatable.View
+          // animation={"slideInUp"}
           animation={animationAlreadyRan ? "" : "slideInUp"}
-          delay={props.slideUpDelay ?? 200}
+          delay={props.slideUpDelay}
           duration={500}
           easing={"ease-out-cubic"}
-          onAnimationEnd={() => setAnimationAlreadyRan(true)}
+          onAnimationEnd={() =>
+            props?.onAnimationEnd ? props?.onAnimationEnd() : undefined
+          }
           key={collection.id + "AnimationView"}
           style={[
             {
               height: height,
-              marginBottom: gap,
               borderRadius: 20,
               backgroundColor: "rgba(0,0,0, 0.5)",
             },
+            props.gap ? { marginBottom: props.gap } : {},
             styles.collectionCard1,
           ]}>
           <LinearGradient
@@ -412,7 +421,7 @@ export default function SwipeCollections({
 
   return (
     <>
-      {!scanVisible && <NavBar></NavBar>}
+      <NavBar></NavBar>
       <View style={styles.container}>
         <View style={styles.contentWrapper}>
           <Text
@@ -441,11 +450,13 @@ export default function SwipeCollections({
               key="scanCollection"></ActionButton>
             <FlatList
               key="flatList"
-              // contentContainerStyle={{ marginTop: 20 }}
+              contentContainerStyle={{
+                backgroundColor: globalVariables.darkBackgroundSwipeView,
+              }}
               ItemSeparatorComponent={() => (
                 <View
                   style={{
-                    height: 20,
+                    height: 21,
                     backgroundColor: globalVariables.darkBackgroundSwipeView,
                   }}
                 />
@@ -456,24 +467,36 @@ export default function SwipeCollections({
                   key={d.item.id}
                   height={75}
                   collection={d.item}
-                  slideUpDelay={d.index * 300}></CollectionCard>
+                  slideUpDelay={d.index * 300}
+                  onAnimationEnd={
+                    d.index === collections?.length - 1
+                      ? () => setAnimationAlreadyRan(true)
+                      : undefined
+                  }></CollectionCard>
               )}
               keyExtractor={item => item.id}
             />
           </View>
-          {/* <ScrollView style={styles.scrollContainer}>
-            <CreateNewCollectionButton
-              onPress={() => createNewCollection()}
-              key="createNewCollection"></CreateNewCollectionButton>
-            {collections.map((c, i) => (
-              <CollectionCard
-                key={c.name}
-                collection={c}
-                slideUpDelay={i * 200}></CollectionCard>
-            ))}
-          </ScrollView> */}
         </View>
       </View>
+
+      {/* <ScrollView style={styles.scrollContainer}>
+
+            {collections.map((c, i) => (
+              <CollectionCard
+                gap={20}
+                key={c.id}
+                height={75}
+                collection={c}
+                slideUpDelay={i * 300}
+                onAnimationEnd={
+                  i === collections?.length - 1
+                    ? () => setAnimationAlreadyRan(true)
+                    : undefined
+                }></CollectionCard>
+            ))}
+          </ScrollView> */}
+      {/* </View>  */}
       <BottomSheet
         ref={sheetRef}
         snapPoints={BOTTOM_SHEET_HEIGHTS}
@@ -516,7 +539,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   scrollContainer: {
-    marginTop: 20,
+    paddingBottom: 50,
   },
   scrollContent: {},
   containerButton: {},

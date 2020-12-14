@@ -1,8 +1,9 @@
 {
   "expo": {
+    "entryPoint": "App.tsx",
     "name": "Swiper",
     "slug": "Swiper",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -13,13 +14,16 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "Tinder for Movies",
+    "githubUrl": "https://github.com/EnglederLucas/Swiper"
   }
 }

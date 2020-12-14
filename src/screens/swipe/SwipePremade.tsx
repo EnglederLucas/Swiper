@@ -496,8 +496,10 @@ const styles = StyleSheet.create({
   spinnerOverlay: {
     position: "absolute",
     zIndex: 100000,
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT - globalVariables.realNavBarHeight - 8,
+    // width: SCREEN_WIDTH,
+    width: "100%",
+    height: "100%",
+    // height: SCREEN_HEIGHT - globalVariables.realNavBarHeight - 8,
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     display: "flex",

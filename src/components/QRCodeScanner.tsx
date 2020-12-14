@@ -32,14 +32,19 @@ export default function QRCodeScanner(props: {
 
   return (
     <View
-      style={{
-        height: SCREEN_HEIGHT,
-        width: SCREEN_WIDTH,
-      }}>
+      style={[
+        StyleSheet.absoluteFill,
+        {
+          backgroundColor: "black",
+          padding: 0,
+          margin: 0,
+          zIndex: 5000,
+        },
+      ]}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeTypes={["qr"]}
-        style={[{ height: SCREEN_HEIGHT, width: SCREEN_WIDTH }]}
+        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        style={StyleSheet.absoluteFillObject}
       />
     </View>
   );
