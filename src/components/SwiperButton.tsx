@@ -9,9 +9,7 @@ import {
   ImageSourcePropType,
   ImageStyle,
 } from "react-native";
-import {
-  TouchableOpacity,
-} from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { globalVariables } from "../GlobalStyles";
 
 interface SwiperButtonProps {

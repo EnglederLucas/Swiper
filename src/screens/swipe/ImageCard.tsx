@@ -8,12 +8,15 @@ import {
   Text,
   StyleProp,
   ViewStyle,
+  TouchableWithoutFeedback,
 } from "react-native";
+// import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { globalVariables } from "../../GlobalStyles";
 import { scaleFontsize, SCREEN_WIDTH, WINDOW_HEIGHT } from "../../utils/Utils";
 
 interface ImageCardProps {
   source: ImageSourcePropType;
+  onPressText?: () => void;
   title: string;
   description?: string;
   withShadow?: boolean;
@@ -57,31 +60,39 @@ export default function ImageCard({
             style={styles.darkGradient}></LinearGradient>
         )}
         <View style={styles.galleryControl}></View>
-        <View style={styles.textContainer}>
-          <Text
+        <TouchableWithoutFeedback onPress={props.onPressText}>
+          <View
             style={[
-              styles.title,
+              styles.textContainer,
               {
-                fontSize: scaleFontsize(props.title, 30, 15, 2),
+                paddingTop: 40,
               },
             ]}>
-            {props.title}
-          </Text>
-          {props.description ? (
             <Text
               style={[
-                styles.desc,
+                styles.title,
                 {
-                  fontSize: 18,
-                  // fontSize: scaleFontsize(props.description, 18, 25),
+                  fontSize: scaleFontsize(props.title, 30, 15, 2),
                 },
               ]}>
-              {props.description}
+              {props.title}
             </Text>
-          ) : (
-            <View></View>
-          )}
-        </View>
+            {props.description ? (
+              <Text
+                style={[
+                  styles.desc,
+                  {
+                    fontSize: 18,
+                    // fontSize: scaleFontsize(props.description, 18, 25),
+                  },
+                ]}>
+                {props.description}
+              </Text>
+            ) : (
+              <View></View>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
       </ImageBackground>
     </View>
   );

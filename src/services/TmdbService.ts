@@ -2,6 +2,10 @@ import {
   CrewDepartment,
   CrewPerson,
   MovieList,
+  MovieItem,
+  PagedResult,
+  PersonResult,
+  TvShow,
 } from "./../contracts/TmdbTypes";
 import {
   ImagesResponse,
@@ -122,6 +126,45 @@ export class TmdbService {
         append_to_response: withAppend,
       },
     });
+
+    return res.data;
+  }
+
+  public async searchMovie(
+    queryString: string,
+    page?: number
+  ): Promise<PagedResult<MovieItem>> {
+    if (!queryString) return null;
+
+    const res = await this.axiosInstance.get<PagedResult<MovieItem>>(
+      `/movie&query=${queryString}&page=${page}`
+    );
+
+    return res.data;
+  }
+
+  public async searchMulti(
+    queryString: string,
+    page?: number
+  ): Promise<PagedResult<MovieItem | PersonResult | TvShow>> {
+    if (!queryString) return null;
+
+    const res = await this.axiosInstance.get<
+      PagedResult<MovieItem | PersonResult | TvShow>
+    >(`/movie&query=${queryString}&page=${page}`);
+
+    return res.data;
+  }
+
+  public async searchPerson(
+    queryString: string,
+    page?: number
+  ): Promise<PagedResult<PersonResult>> {
+    if (!queryString) return null;
+
+    const res = await this.axiosInstance.get<PagedResult<PersonResult>>(
+      `/movie&query=${queryString}&page=${page}`
+    );
 
     return res.data;
   }

@@ -18,6 +18,7 @@ import {
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
 import * as Animatable from "react-native-animatable";
 import { FirestoreService } from "../../services/FirestoreService";
+import AddCollectionItemsModal from "./AddItemsModal";
 
 type CreateCollectionProps = {
   onCancel: () => void;
@@ -33,16 +34,12 @@ export default function CreateCollection(
 
   const [addMoviesVisible, setAddMoviesVisible] = useState(false);
 
-  const [searchResults, setSearchResults] = useState("");
-  const [importedList, setImportedList] = useState<string>("");
   const [importListVisible, setImportListVisible] = useState(false);
 
   const [listId, setListId] = useState("");
 
   // useEffect(() => {
   // }, [searchString]);
-
-  const modalClose = useRef<any>(null);
 
   function createNewCollection() {
     const service = FirestoreService.getInstance();
@@ -88,149 +85,6 @@ export default function CreateCollection(
               value={listId}
               placeholder="Tmdb List Id"
               onChangeText={text => setListId(text)}></SimpleTextInput>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
-  function AddMoviesModal(): JSX.Element {
-    return (<Modal
-    animationType="slide"
-    style={{ height: SCREEN_HEIGHT, backgroundColor: globalVariables.dark }}
-    transparent={true}
-    statusBarTranslucent={true}
-    presentationStyle={"overFullScreen"}
-    visible={addMoviesVisible}>
-    <View
-      style={{
-        height: "100%",
-        width: "100%",
-        backgroundColor: globalVariables.darkBackgroundSwipeView,
-      }}>
-      <View
-        style={{
-          height: globalVariables.navBarHeight,
-          justifyContent: "flex-end",
-          flexDirection: "row",
-        }}>
-        <TouchableOpacity
-          onPress={() => {
-            modalClose?.current?.rotate();
-            setAddMoviesVisible(false);
-          }}>
-          <View style={{ padding: 25, paddingTop: 50 }}>
-            <Animatable.Image
-              ref={modalClose}
-              animation={"rotate"}
-              direction={"alternate"}
-              duration={750}
-              easing={"ease-out-quad"}
-              source={require("./../../../assets/iconsPng/feather-icon/x128.png")}
-              fadeDuration={0}
-              style={{ width: 32, height: 32 }}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          margin: 25,
-        }}>
-        <SimpleTextInput
-          width={260}
-          height={50}
-          value={importedList}
-          placeholder="Import List"
-          onChangeText={text => setImportedList(text)}></SimpleTextInput>
-        <TouchableOpacity
-          onPress={() => {
-            setAddMoviesVisible(false);
-          }}>
-          <View style={{ padding: 20, paddingTop: 40 }}>
-            <Animatable.Image
-              animation={"bounceIn"}
-              duration={750}
-              easing={"ease-out-quad"}
-              source={require("./../../../assets/iconsPng/feather-icon/upload.png")}
-              fadeDuration={0}
-              style={{ width: 32, height: 32 }}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>);
-    return (
-      <Modal
-        animationType="slide"
-        style={{ height: SCREEN_HEIGHT, backgroundColor: globalVariables.dark }}
-        transparent={true}
-        statusBarTranslucent={true}
-        presentationStyle={"overFullScreen"}
-        visible={addMoviesVisible}>
-        <View
-          style={{
-            height: "100%",
-            width: "100%",
-            backgroundColor: globalVariables.darkBackgroundSwipeView,
-          }}>
-          <View
-            style={{
-              height: globalVariables.navBarHeight,
-              justifyContent: "flex-end",
-              flexDirection: "row",
-            }}>
-            <TouchableOpacity
-              onPress={() => {
-                modalClose?.current?.rotate();
-                setAddMoviesVisible(false);
-              }}>
-              <View style={{ padding: 25, paddingTop: 50 }}>
-                <Animatable.Image
-                  ref={modalClose}
-                  animation={"rotate"}
-                  direction={"alternate"}
-                  duration={750}
-                  easing={"ease-out-quad"}
-                  source={require("./../../../assets/iconsPng/feather-icon/x128.png")}
-                  fadeDuration={0}
-                  style={{ width: 32, height: 32 }}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              margin: 25,
-            }}>
-            <SimpleTextInput
-              width={260}
-              height={50}
-              value={importedList}
-              placeholder="Import List"
-              onChangeText={text => setImportedList(text)}></SimpleTextInput>
-            <TouchableOpacity
-              onPress={() => {
-                setAddMoviesVisible(false);
-              }}>
-              <View style={{ padding: 20, paddingTop: 40 }}>
-                <Animatable.Image
-                  animation={"bounceIn"}
-                  duration={750}
-                  easing={"ease-out-quad"}
-                  source={require("./../../../assets/iconsPng/feather-icon/upload.png")}
-                  fadeDuration={0}
-                  style={{ width: 32, height: 32 }}
-                />
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -380,7 +234,9 @@ export default function CreateCollection(
             height={50}></SwiperButton>
         </View>
       </View>
-      {/* <AddMoviesModal></AddMoviesModal> */}
+      <AddCollectionItemsModal
+        visible={addMoviesVisible}
+        onClose={() => setAddMoviesVisible(false)}></AddCollectionItemsModal>
       {/* <ImportListModal></ImportListModal> */}
     </View>
   );

@@ -15,7 +15,7 @@ interface GeneralResponse {
   name: string | undefined;
 }
 
-class Show implements GeneralResponse {
+export class TvShow implements GeneralResponse {
   backdrop_path: string;
   genres: Genre[];
   homepage: string;
@@ -28,17 +28,16 @@ class Show implements GeneralResponse {
   status: string;
   vote_average: number;
   vote_count: number;
-  title: string | undefined;
   name: string | undefined;
 
   first_air_date: Date;
   release_date: Date;
 
-  get showTitle() {
-    return this.title === undefined ? this.name : this.title;
+  get title(): string {
+    return this.name;
   }
 
-  get releaseYear() {
+  get releaseYear(): string {
     return new Date(this.release_date ?? this.first_air_date)
       .getFullYear()
       .toString();
@@ -276,14 +275,14 @@ export interface MovieList {
   description: string;
   favorite_count: number;
   id: string;
-  items: MovieListItem[];
+  items: MovieItem[];
   item_count: number;
   iso_639_1: string;
   name: string;
   poster_path: string;
 }
 
-export interface MovieListItem {
+export interface MovieItem {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -299,6 +298,24 @@ export interface MovieListItem {
   video: boolean;
   vote_average: number;
   vote_count: number;
+}
+
+export interface PersonResult {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for: MovieItem[];
+  known_for_department: string;
+  name: string;
+  popularity: number;
+  profile_path: string;
+}
+
+export interface PagedResult<T> {
+  page: number;
+  results: T[];
+  total_pages: number;
+  total_results: number;
 }
 
 export enum MediaType {

@@ -19,6 +19,8 @@ import { SCREEN_WIDTH } from "../../utils/Utils";
 import { getHexColorWithAlpha, globalVariables } from "../../GlobalStyles";
 import { ScrollView } from "react-native-gesture-handler";
 import * as Animatable from "react-native-animatable";
+import PersonCard from "../../components/PersonCard";
+import { PersonList } from "../../components";
 
 interface DetailViewProps {
   // movie?: MovieResponse & AppendType;
@@ -38,8 +40,6 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
     rest: useRef<Animatable.View & View>(null),
   };
 
-  // const [movie, setMovie] = useState<(MovieResponse & AppendType) | null>(null);
-
   useEffect(() => {
     // console.log(movie);
     // for (const key in animatables) {
@@ -47,7 +47,7 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
     //     const element: React.MutableRefObject<Animatable.View & View> =
     //       animatables[key];
     //     // console.log("Current", element.current);
-    //     element?.current?.slideInUp(2000);
+    //     element?.current?.slideInUp(1000);
     //   }
     // }
   }, [movie]);
@@ -91,177 +91,6 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
         borderBottomWidth: props.borderWidth,
       }}
     />
-  );
-
-  const PersonCard = ({
-    size = 65,
-    imageSize = size - 10,
-    borderRadius = 10,
-    fontSize = 13,
-    marginTopBottom = 10,
-    marginLeft = 7,
-    ...props
-  }: {
-    borderRadius?: number;
-    name: string;
-    role: string;
-    profile_path: string;
-    size?: number;
-    imageSize?: number;
-    containerStyle?: StyleProp<ViewStyle>;
-    fontSize?: number;
-    marginTopBottom?: number;
-    marginLeft?: number;
-  }): JSX.Element => (
-    <View
-      style={[
-        {
-          flexDirection: "column",
-          // justifyContent: "center",
-          alignItems: "center",
-          marginLeft: marginLeft,
-
-          marginTop: marginTopBottom,
-          marginBottom: marginTopBottom,
-        },
-        props.containerStyle,
-      ]}>
-      {props.profile_path ? (
-        <Image
-          style={{
-            width: imageSize,
-            height: imageSize,
-            borderRadius: borderRadius,
-            resizeMode: "cover",
-          }}
-          source={TmdbService.getImageSource<ImageProfileSize>(
-            props.profile_path,
-            "w185"
-          )}></Image>
-      ) : (
-        <></>
-      )}
-      {!props.profile_path ? (
-        <View
-          style={{
-            width: imageSize,
-            height: imageSize,
-            borderRadius: borderRadius,
-            backgroundColor: globalVariables.grey,
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontFamily: globalVariables.montserrat500Medium,
-              color: getHexColorWithAlpha(globalVariables.light, 30),
-            }}>
-            {props.name
-              .split(" ")
-              .map(w => w[0])
-              .join("")}
-          </Text>
-        </View>
-      ) : (
-        <></>
-      )}
-      <View
-        style={{
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 5,
-          width: size,
-        }}>
-        <Text
-          style={{
-            fontSize: fontSize,
-            color: getHexColorWithAlpha(globalVariables.light, 60),
-            fontFamily: globalVariables.montserrat400Regular,
-            textAlign: "center",
-          }}>
-          {props.name}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize - 2,
-            color: getHexColorWithAlpha(globalVariables.light, 45),
-            fontFamily: globalVariables.montserrat300Light,
-            textAlign: "center",
-          }}>
-          {props.role}
-        </Text>
-      </View>
-    </View>
-  );
-
-  const PersonList = ({
-    height = 200,
-    border = "top",
-    borderWidth = 1,
-    ...props
-  }: {
-    marginTop?: number;
-    title: string;
-    children: JSX.Element;
-    borderWidth?: number;
-    height?: number;
-    border?: "bottom" | "top" | "none";
-    containerStyle?: StyleProp<ViewStyle>;
-  }): JSX.Element => (
-    <Animatable.View
-      ref={animatables.cast}
-      animation={"slideInUp"}
-      duration={1000}
-      style={[
-        {
-          position: "relative",
-          padding: 20,
-          width: "100%",
-          height: height,
-          alignItems: "center",
-          justifyContent: "center",
-          // borderWidth: 3,
-        },
-        border === "bottom" && {
-          // paddingBottom: 10,
-          borderTopColor: getHexColorWithAlpha(globalVariables.light, 20),
-          borderWidth,
-        },
-        border === "top"
-          ? {
-              // paddingTop: 10,
-              borderTopColor: getHexColorWithAlpha(globalVariables.light, 100),
-              borderWidth,
-            }
-          : {},
-        props.containerStyle,
-      ]}>
-      <View style={{ position: "absolute", left: 0, top: 0 }}>
-        <Text
-          style={{
-            fontSize: 18,
-            fontFamily: globalVariables.montserrat400Regular,
-            color: getHexColorWithAlpha(globalVariables.light, 20),
-            marginLeft: globalVariables.textMarginLeft,
-          }}>
-          {props.title}
-        </Text>
-
-        <ScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.scrollContent}
-          decelerationRate="normal"
-          snapToOffsets={[0]}
-          snapToStart={false}
-          snapToEnd={false}
-          horizontal={true}
-          indicatorStyle={"black"}>
-          {props.children}
-        </ScrollView>
-      </View>
-    </Animatable.View>
   );
 
   const GeneralInfo = ({
@@ -390,6 +219,7 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
           marginTop: 40, //To correct the inconsisten screenHeight shit
         }}>
         <GeneralInfo
+          key="generalInfo"
           height={200}
           alignMode={"left"}
           includeDescription={true}></GeneralInfo>
@@ -397,13 +227,21 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
         <PersonList
           title={"Cast"}
           containerStyle={{ marginTop: 15 }}
-          border={"none"}>
+          border={"none"}
+          animationOptions={{
+            animationRef: animatables.cast,
+            animation: "slideInLeft",
+            duration: 1000,
+          }}>
           <>
             {movie?.credits?.cast.slice(0, 15).map(c => (
               <PersonCard
                 name={c.name}
                 role={c.character}
-                profile_path={c.profile_path}
+                profile={TmdbService.getImageSource<ImageProfileSize>(
+                  c.profile_path,
+                  "w185"
+                )}
                 key={c.credit_id}
                 size={70}
                 marginTopBottom={15}
@@ -413,7 +251,15 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
           </>
         </PersonList>
 
-        <PersonList title={"Crew"} border={"none"} height={220}>
+        <PersonList
+          title={"Crew"}
+          border={"none"}
+          height={220}
+          animationOptions={{
+            animationRef: animatables.crew,
+            animation: "slideInUp",
+            duration: 1000,
+          }}>
           <>
             {TmdbService.getOrderedCrewWithGroupedJobs(
               movie?.credits?.crew,
@@ -422,7 +268,10 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
               <PersonCard
                 name={c.name}
                 role={c.job}
-                profile_path={c.profile_path}
+                profile={TmdbService.getImageSource<ImageProfileSize>(
+                  c.profile_path,
+                  "w185"
+                )}
                 key={c.credit_id}
                 size={70}
                 marginTopBottom={15}
@@ -432,7 +281,6 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
           </>
         </PersonList>
 
-        {/* <BackdropImage></BackdropImage> */}
         <View>
           <YoutubePlayer
             ref={youtubePlayerRef}
@@ -473,18 +321,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  scrollContainer: {
-    paddingLeft: 10,
-    // paddingBottom: 10,
-    // borderColor: "green",
-    // borderBottomWidth: 2,
-    // borderColor: globalVariables.grey,
-    width: SCREEN_WIDTH,
-    zIndex: -3,
-  },
-  scrollContent: {
-    paddingRight: 30,
   },
 });
 

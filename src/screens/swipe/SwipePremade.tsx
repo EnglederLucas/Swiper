@@ -166,6 +166,14 @@ export default function SwipePremade({
     setTimeout(() => swiper?.current?.swipeTop(), 500);
   };
 
+  const scrollToDetails = () => {
+    scrollView?.current?.scrollTo({
+      x: 0,
+      y: screenHeight,
+      animated: true,
+    });
+  };
+
   const ButtonBarWithLinearGradient = ({
     gradientBlur = 0.25,
   }: {
@@ -210,6 +218,7 @@ export default function SwipePremade({
             "w780"
           )}
           title={movie?.title}
+          onPressText={() => scrollToDetails()}
           description={movie?.tagline}></ImageCard>
       </View>
     );
@@ -303,14 +312,14 @@ export default function SwipePremade({
                 onSwipedTop={() => onSwiped("superLike")}
                 horizontalThreshold={SCREEN_WIDTH / 6}
                 // onSwipedBottom={() => this.onSwiped("bottom")}
-                onTapCard={() =>
-                  scrollView?.current?.scrollTo({
-                    x: 0,
-                    y: screenHeight,
-                    animated: true,
-                  })
-                }
-                onTapCardDeadZone={3}
+                // onTapCard={() =>
+                //   scrollView?.current?.scrollTo({
+                //     x: 0,
+                //     y: screenHeight,
+                //     animated: true,
+                //   })
+                // }
+                // onTapCardDeadZone={}
                 cards={movieQueue}
                 cardIndex={cardIndex}
                 cardVerticalMargin={125}

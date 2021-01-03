@@ -15,6 +15,7 @@ import {
   GestureDirection,
   StackCardStyleInterpolator,
 } from "@react-navigation/stack/lib/typescript/src/types";
+import { registerRootComponent } from "expo";
 // import { SplashScreen } from "expo";
 
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -29,7 +30,9 @@ export type AuthenticationStackParameterList = {
   SwipeCollections: undefined;
 };
 
-export const AuthenticationStack = createStackNavigator<AuthenticationStackParameterList>();
+export const AuthenticationStack = createStackNavigator<
+  AuthenticationStackParameterList
+>();
 
 const AuthenticationNavigator = () => {
   const [userId, setUserId] = useState("");
