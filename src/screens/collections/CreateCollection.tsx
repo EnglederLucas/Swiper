@@ -19,6 +19,7 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
 import * as Animatable from "react-native-animatable";
 import { FirestoreService } from "../../services/FirestoreService";
 import AddCollectionItemsModal from "./AddItemsModal";
+import { useNavigation } from "@react-navigation/native";
 
 type CreateCollectionProps = {
   onCancel: () => void;
@@ -27,6 +28,8 @@ type CreateCollectionProps = {
 export default function CreateCollection(
   props: CreateCollectionProps
 ): JSX.Element {
+  const navigation = useNavigation();
+
   const [collectionName, setCollectionName] = useState("");
   const [plannedDate, setPlannedDate] = useState(Date.now());
 
@@ -133,7 +136,10 @@ export default function CreateCollection(
           }}>
           <TouchableHighlight
             underlayColor={getHexColorWithAlpha(globalVariables.light, 0.3)}
-            onPress={() => setAddMoviesVisible(true)}>
+            onPress={() => {
+              // setAddMoviesVisible(true);
+              navigation.navigate("AddToCollection");
+            }}>
             <View
               style={{
                 borderColor: getHexColorWithAlpha(globalVariables.light, 90),
@@ -234,9 +240,11 @@ export default function CreateCollection(
             height={50}></SwiperButton>
         </View>
       </View>
-      <AddCollectionItemsModal
+      {/* <AddCollectionItemsModal
         visible={addMoviesVisible}
         onClose={() => setAddMoviesVisible(false)}></AddCollectionItemsModal>
+         */}
+
       {/* <ImportListModal></ImportListModal> */}
     </View>
   );

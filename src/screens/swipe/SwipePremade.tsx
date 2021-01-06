@@ -287,7 +287,7 @@ export default function SwipePremade({
           ref={scrollView}
           style={styles.scrollContainer}
           contentContainerStyle={styles.scrollContent}
-          decelerationRate="fast"
+          decelerationRate="normal"
           disableScrollViewPanResponder
           snapToOffsets={[screenHeight]}
           snapToStart={true}
@@ -434,6 +434,7 @@ export default function SwipePremade({
             }>
             <DetailView
               movie={currentMovie}
+              marginTop={40}
               buttonBarHeight={buttonBarHeight}></DetailView>
           </View>
         </ScrollView>

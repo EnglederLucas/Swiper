@@ -16,6 +16,10 @@ import {
   StackCardStyleInterpolator,
 } from "@react-navigation/stack/lib/typescript/src/types";
 import { registerRootComponent } from "expo";
+import { MovieResponse } from "./src/contracts/TmdbTypes";
+import { AppendType } from "./src/services/TmdbService";
+import DetailView from "./src/screens/swipe/DetailView";
+import AddToCollection from "./src/screens/collections/AddToCollection";
 // import { SplashScreen } from "expo";
 
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -26,7 +30,8 @@ export type AuthenticationStackParameterList = {
   Login: undefined;
   SignUp: undefined;
   Settings: undefined;
-  Details: { image: ImageSourcePropType };
+  Details: { movie: MovieResponse & AppendType };
+  AddToCollection: { collectionId?: number };
   SwipeCollections: undefined;
 };
 
@@ -69,8 +74,16 @@ const AuthenticationNavigator = () => {
             component={SwipeCollections}
             options={rightToLeftAnimation}></AuthenticationStack.Screen>
           <AuthenticationStack.Screen
+            name="Details"
+            component={DetailView}
+            options={rightToLeftAnimation}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
             name="Settings"
             component={SettingsScreen}
+            options={leftToRightAnimation}></AuthenticationStack.Screen>
+          <AuthenticationStack.Screen
+            name="AddToCollection"
+            component={AddToCollection}
             options={leftToRightAnimation}></AuthenticationStack.Screen>
         </>
       ) : (

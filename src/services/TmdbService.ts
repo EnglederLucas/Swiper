@@ -6,6 +6,7 @@ import {
   PagedResult,
   PersonResult,
   TvShow,
+  SearchResult,
 } from "./../contracts/TmdbTypes";
 import {
   ImagesResponse,
@@ -73,7 +74,7 @@ export class TmdbService {
       },
       (error: AxiosError) => {
         console.log(error.message);
-        return Promise.reject(error);
+        return Promise.resolve(error); //TODO: Reject?
       }
     );
   }
@@ -81,6 +82,10 @@ export class TmdbService {
   private constructor() {
     this.apiKey = TMDB_API_KEY;
     this.axiosInit();
+  }
+
+  public static get Instance(): TmdbService {
+    return this.getInstance();
   }
 
   public static getInstance(): TmdbService {
@@ -136,22 +141,50 @@ export class TmdbService {
   ): Promise<PagedResult<MovieItem>> {
     if (!queryString) return null;
 
+    console.log("JOE");
+
+    console.log(queryString);
+    console.log(page);
+
     const res = await this.axiosInstance.get<PagedResult<MovieItem>>(
-      `/movie&query=${queryString}&page=${page}`
+      `/search/movie?query=${queryString}&page=${page}`
     );
 
     return res.data;
   }
 
+  public async searchMovieExtended(
+    queryString: string,
+    orderBy?: "popularity" | "rating"
+  ): Promise<MovieItem[]> {
+    if (!queryString) return null;
+
+    const res = await this.axiosInstance.get<PagedResult<MovieItem>>(
+      `/search/movie?query=${queryString}`
+    );
+
+    let {
+      data: { results },
+    } = res;
+
+    if (orderBy === "popularity") {
+      results = results.sort((a, b) => b.popularity - a.popularity);
+    } else if (orderBy === "rating") {
+      results = results.sort((a, b) => b.vote_average - a.vote_average);
+    }
+
+    return results;
+  }
+
   public async searchMulti(
     queryString: string,
     page?: number
-  ): Promise<PagedResult<MovieItem | PersonResult | TvShow>> {
+  ): Promise<PagedResult<SearchResult>> {
     if (!queryString) return null;
 
-    const res = await this.axiosInstance.get<
-      PagedResult<MovieItem | PersonResult | TvShow>
-    >(`/movie&query=${queryString}&page=${page}`);
+    const res = await this.axiosInstance.get<PagedResult<SearchResult>>(
+      `search/multi?query=${queryString}&page=${page}`
+    );
 
     return res.data;
   }
@@ -163,7 +196,7 @@ export class TmdbService {
     if (!queryString) return null;
 
     const res = await this.axiosInstance.get<PagedResult<PersonResult>>(
-      `/movie&query=${queryString}&page=${page}`
+      `search/person?query=${queryString}&page=${page}`
     );
 
     return res.data;

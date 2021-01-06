@@ -16,6 +16,7 @@ interface SwiperTextInput {
   borderRadius?: number;
   borderWidth?: number;
   style?: StyleProp<ViewStyle>;
+  textInputStyle?: StyleProp<TextStyle>;
 }
 
 export default function SwiperTextInput({
@@ -39,6 +40,8 @@ export default function SwiperTextInput({
     borderStyle: "solid",
     borderRadius,
     borderColor: "#fff",
+    fontSize: height / 2.5,
+    borderBottomWidth: 0,
   };
 
   const gradientStyle: StyleProp<ViewStyle> = {
@@ -74,8 +77,9 @@ export default function SwiperTextInput({
           : [globalVariables.light, globalVariables.light]
       }>
       <TextInput
-        style={{ ...baseStyle, ...inputStyle }}
+        style={[{ ...baseStyle, ...inputStyle }, props.textInputStyle]}
         placeholderTextColor={isFocused ? globalVariables.primaryOne : "#fff"}
+        underlineColorAndroid="rgba(0,0,0,0)"
         onBlur={() => onBlur()}
         onFocus={() => onFocus()}
         {...props}

@@ -12,7 +12,6 @@ import {
   TouchableOpacity as RNTouchableOpacity,
 } from "react-native";
 import {
-  ScrollView,
   TouchableHighlight,
   TouchableOpacity,
 } from "react-native-gesture-handler";
@@ -20,7 +19,6 @@ import NavBar from "../../components/NavBar";
 import {
   getDefaultTextStyle,
   getHexColorWithAlpha,
-  globalStyles,
   globalVariables,
 } from "../../GlobalStyles";
 import * as Animatable from "react-native-animatable";
@@ -29,20 +27,17 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { SwipeCollection } from "../../contracts/Collection";
 import { FirestoreService } from "../../services/FirestoreService";
 
-import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
-import { SimpleTextInput, SwiperButton } from "../../components";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
-import { SwiperButtonWithIcon } from "../../components/SwiperButton";
+import { SwiperButton } from "../../components";
+import { SCREEN_WIDTH } from "../../utils/Utils";
 import { Modalize } from "react-native-modalize";
 import CreateCollection from "./CreateCollection";
 import { QRCode } from "react-native-custom-qr-codes-expo";
-import { BarCodeScanner } from "expo";
-import { Button } from "react-native";
 import QRCodeScanner from "../../components/QRCodeScanner";
 import { auth } from "../../firebaseconfig";
 import Axios from "axios";
+import BottomSheetHeader from "../../components/BottomSheetHeader";
 
 interface CollectionCardProps {
   collection: SwipeCollection;
@@ -91,7 +86,7 @@ export default function SwipeCollections({
       .then(c => {
         if (isMounted) setCollections(c?.creator.concat(c?.member) ?? []);
       })
-      .catch(err => console.log("Firebase Error"));
+      .catch(() => console.log("Firebase Error"));
 
     setAnimationAlreadyRan(false);
 
@@ -111,10 +106,6 @@ export default function SwipeCollections({
   const modalizeRef = useRef<Modalize>(null);
 
   const modalClose = useRef<any>(null);
-
-  const onOpen = () => {
-    modalizeRef.current?.open();
-  };
 
   function ShareModal(): JSX.Element {
     return (
@@ -248,29 +239,6 @@ export default function SwipeCollections({
     </View>
   );
 
-  const renderHeader = (): JSX.Element => {
-    return (
-      <View
-        style={{
-          backgroundColor: globalVariables.dark,
-          height: 50,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
-        }}>
-        <View
-          style={{
-            backgroundColor: getHexColorWithAlpha(globalVariables.light, 70),
-            borderRadius: 10,
-            height: 5,
-            width: 50,
-          }}></View>
-      </View>
-    );
-  };
-
   const renderCreateCollection = (): JSX.Element => {
     return (
       <View
@@ -303,8 +271,13 @@ export default function SwipeCollections({
         }}
         onPress={() => {
           setSelectedCollection(collection);
-          sheetRef?.current?.snapTo(BOTTOM_SHEET_HEIGHTS[1]);
+          sheetRef?.current?.snapTo(1);
         }}
+        onLongPress={() =>
+          setCollections(collections =>
+            collections.filter(d => d.id !== collection.id)
+          )
+        }
         // underlayColor={getHexColorWithAlpha(globalVariables.light, 50)}
         activeOpacity={0.9}
         containerStyle={[
@@ -407,9 +380,7 @@ export default function SwipeCollections({
   }
 
   function createNewCollection() {
-    createCollectionSheetRef?.current?.snapTo(
-      CREATE_COLLECTION_SHEET_HEIGHTS[1]
-    );
+    createCollectionSheetRef?.current?.snapTo(1);
   }
 
   function scanCollection() {
@@ -513,13 +484,13 @@ export default function SwipeCollections({
         ref={sheetRef}
         snapPoints={BOTTOM_SHEET_HEIGHTS}
         renderContent={renderContent}
-        renderHeader={renderHeader}
+        renderHeader={() => <BottomSheetHeader></BottomSheetHeader>}
       />
       <BottomSheet
         ref={createCollectionSheetRef}
         snapPoints={CREATE_COLLECTION_SHEET_HEIGHTS}
         renderContent={renderCreateCollection}
-        renderHeader={renderHeader}
+        renderHeader={() => <BottomSheetHeader></BottomSheetHeader>}
       />
       {/* <Modalize ref={modalizeRef}>...your content</Modalize> */}
       <ShareModal></ShareModal>

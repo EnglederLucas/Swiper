@@ -45,7 +45,7 @@ export default function PersonCard({
         },
         props.containerStyle,
       ]}>
-      {props.profile ? (
+      {"uri" in (props.profile as any) ? ( //check if imageUri is given
         <Image
           style={{
             width: imageSize,
@@ -55,9 +55,6 @@ export default function PersonCard({
           }}
           source={props.profile}></Image>
       ) : (
-        <></>
-      )}
-      {!props.profile ? (
         <View
           style={{
             width: imageSize,
@@ -79,8 +76,6 @@ export default function PersonCard({
               .join("")}
           </Text>
         </View>
-      ) : (
-        <></>
       )}
       <View
         style={{

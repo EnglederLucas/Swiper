@@ -19,6 +19,7 @@ interface SimpleTextInputProps {
   cursorColor?: string;
   fontSize?: number;
   wrapperStyle?: StyleProp<ViewStyle>;
+  textInputStyle?: StyleProp<TextInput>;
 }
 
 export default function SimpleTextInput({

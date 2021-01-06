@@ -87,7 +87,7 @@ export default function PersonList({
           snapToStart={false}
           snapToEnd={false}
           horizontal={true}
-          indicatorStyle={"black"}>
+          indicatorStyle={"white"}>
           {props.children}
         </ScrollView>
       </View>

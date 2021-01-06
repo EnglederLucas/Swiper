@@ -79,6 +79,8 @@ export interface TvResponse extends Omit<GeneralResponse, "title"> {
   type: string;
 }
 
+export type SearchResult = TvResponse | MovieResponse | PersonResult;
+
 export interface VideosResponse {
   id?: number;
   results: VideoResult[];

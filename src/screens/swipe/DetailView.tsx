@@ -25,6 +25,8 @@ import { PersonList } from "../../components";
 interface DetailViewProps {
   // movie?: MovieResponse & AppendType;
   buttonBarHeight?: number;
+  marginTop?: number;
+  animationGeneralInfo?: boolean;
   movie: (MovieResponse & AppendType) | null | undefined;
 }
 
@@ -105,6 +107,7 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
     imagePadding?: number;
     border?: boolean;
     borderColor?: string;
+    animation: boolean;
     includeDescription?: boolean;
     alignMode?: "left" | "center";
     style?: StyleProp<ViewStyle>;
@@ -112,7 +115,7 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
     <Animatable.View
       style={[props.style]}
       ref={animatables.generalInfo}
-      animation={"slideInUp"}
+      animation={props.animation ? "slideInUp" : ""}
       duration={1000}>
       <View style={[styles.info_wrapper, { height: height, borderRadius: 2 }]}>
         <View
@@ -216,10 +219,11 @@ const DetailView = ({ movie, ...props }: DetailViewProps): JSX.Element => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: 40, //To correct the inconsisten screenHeight shit
+          marginTop: props.marginTop, //To correct the inconsisten screenHeight shit
         }}>
         <GeneralInfo
           key="generalInfo"
+          animation={props.animationGeneralInfo}
           height={200}
           alignMode={"left"}
           includeDescription={true}></GeneralInfo>

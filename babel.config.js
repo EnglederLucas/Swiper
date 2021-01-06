@@ -18,3 +18,14 @@ module.exports = function (api) {
     ],
   };
 };
+
+/*
+ [
+        "babel-plugin-module-resolver",
+        {
+          root: ["./src/"],
+          alias: {
+            tailwind: "./tailwind",
+          },
+        },
+      ],*/
