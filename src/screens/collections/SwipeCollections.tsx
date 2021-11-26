@@ -9,11 +9,9 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { SwipeCollection } from "../../contracts/Collection";
 import { FirestoreService } from "../../services/FirestoreService";
 
-import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
-import { LinearGradient } from "expo-linear-gradient";
 import { SwiperButton } from "../../components";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../utils/Utils";
+import { SCREEN_WIDTH } from "../../utils/Utils";
 
 interface CollectionCardProps {
   collection: SwipeCollection;

@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
-import { AppLoading } from "expo";
+import AppLoading from "expo-app-loading";
 import { Asset } from "expo-asset";
 import * as Font from "expo-font";
 import { InitialState, NavigationContainer } from "@react-navigation/native";
@@ -14,7 +14,7 @@ import {
   Montserrat_200ExtraLight,
 } from "@expo-google-fonts/montserrat";
 
-import {firebase} from '../firebaseconfig';
+import { firebase } from "../firebaseconfig";
 
 const NAVIGATION_STATE_KEY = `NAVIGATION_STATE_KEY-${Constants.manifest.sdkVersion}`;
 
